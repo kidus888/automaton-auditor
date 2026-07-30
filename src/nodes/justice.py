@@ -57,14 +57,18 @@ def chief_justice_node(state: AgentState) -> Dict:
         overruled_reason = ""
 
         # --- Deterministic Rule 1: Rule of Security ---
-        # Confirmed security flaws cap final score at 3 regardless of Defense effort points
+        # Confirmed security flaws cap final score at 3 regardless of Defense effort points.
+        # NOTE: only the "SECURITY VIOLATION" marker is checked here (not a bare "os.system"
+        # substring) because analyze_safe_tool_engineering's *clean* rationale also reads
+        # "No raw os.system() calls detected" -- matching on the substring alone would false-
+        # positive a security flaw on every audit, safe or not.
         has_security_flaw = False
         for category, ev_list in evidences_dict.items():
             for ev in ev_list:
-                if "SECURITY VIOLATION" in ev.rationale or "os.system" in ev.rationale:
+                if "SECURITY VIOLATION" in ev.rationale:
                     has_security_flaw = True
 
-        if has_security_flaw and (dim_id == "safe_tool_engineering" or raw_final > 3):
+        if has_security_flaw and dim_id == "safe_tool_engineering":
             raw_final = min(raw_final, 3)
             overruled_reason += "[RULE OF SECURITY OVERRIDE]: Confirmed security vulnerability (raw os.system) caps score at 3. Defense effort points overruled. "
 
