@@ -1,7 +1,6 @@
 # The Automaton Auditor 🏛️🤖
 
 > **Orchestrating Deep LangGraph Swarms for Autonomous Governance**  
-> FDE Challenge Week 2 - Digital Courtroom Architecture
 
 The **Automaton Auditor** is a production-grade, multi-agent AI governance system designed to evaluate code repositories and architectural PDF reports against strict forensic standards. Rather than relying on simple single-prompt wrappers, the system operates as a **Digital Courtroom** utilizing a hierarchical LangGraph state graph.
 
