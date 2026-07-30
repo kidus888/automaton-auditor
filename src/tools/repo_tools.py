@@ -277,6 +277,40 @@ def analyze_graph_orchestration(repo_path: str) -> Evidence:
         )
 
 
+class OsSystemCallVisitor(ast.NodeVisitor):
+    """
+    Detects actual os.system(...) call sites via AST, not text mentions inside string
+    literals. A raw regex over file text would self-match this module's own diagnostic
+    strings (e.g. "SECURITY VIOLATION: raw os.system() found"), which contain the
+    substring "os.system(" without ever calling it.
+    """
+
+    def __init__(self):
+        self.found = False
+
+    def visit_Call(self, node: ast.Call):
+        func = node.func
+        if (
+            isinstance(func, ast.Attribute)
+            and func.attr == "system"
+            and isinstance(func.value, ast.Name)
+            and func.value.id == "os"
+        ):
+            self.found = True
+        self.generic_visit(node)
+
+
+def _has_os_system_call(text: str) -> bool:
+    """Parses source with ast to check for a real os.system(...) call, ignoring syntax errors."""
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return False
+    visitor = OsSystemCallVisitor()
+    visitor.visit(tree)
+    return visitor.found
+
+
 def analyze_safe_tool_engineering(repo_path: str) -> Evidence:
     """
     Scans src/tools/ for git cloning logic, sandboxing (tempfile.TemporaryDirectory()),
@@ -311,7 +345,7 @@ def analyze_safe_tool_engineering(repo_path: str) -> Evidence:
                     uses_tempfile = True
                     code_snippets.append(f"[{file}]: tempfile.TemporaryDirectory found")
 
-                if re.search(r"os\.system\s*\(", text):
+                if _has_os_system_call(text):
                     uses_os_system = True
                     code_snippets.append(f"[{file}]: SECURITY VIOLATION raw os.system() found")
 
