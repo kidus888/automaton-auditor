@@ -1,98 +1,91 @@
-import json
-import os
-from typing import Dict, List
+from typing import List, Union
+
 from langgraph.graph import END, START, StateGraph
-from src.state import AgentState
+
 from src.nodes.detectives import (
-    repo_investigator_node,
+    REPO_UNAVAILABLE,
+    context_builder_node,
     doc_analyst_node,
-    vision_inspector_node,
     evidence_aggregator_node,
+    evidence_missing_node,
+    repo_investigator_node,
+    vision_inspector_node,
 )
-from src.nodes.judges import (
-    prosecutor_node,
-    defense_node,
-    tech_lead_node,
-)
+from src.nodes.judges import defense_node, prosecutor_node, tech_lead_node
 from src.nodes.justice import chief_justice_node
+from src.rubric import load_default_rubric  # noqa: F401  (re-exported for callers/tests)
+from src.state import AgentState
 
 
-def load_default_rubric() -> List[Dict]:
-    """Loads the 10 rubric dimensions from rubric.json."""
-    rubric_path = os.path.join(os.path.dirname(__file__), "..", "rubric.json")
-    if os.path.exists(rubric_path):
-        with open(rubric_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            return data.get("dimensions", [])
-    return []
-
-
-def check_evidence_health(state: AgentState) -> str:
+def route_after_aggregation(state: AgentState) -> Union[List[str], str]:
     """
-    Conditional edge function checking if detective evidence collection was successful.
-    If evidence dict is populated, routes to judicial bench. If missing, routes to error handler.
+    Conditional edge after the evidence fan-in.
+
+    - Evidence collected: returns all three Judges as a list, which LangGraph dispatches as
+      parallel branches in the same superstep (fan-out), each judging the SAME evidence.
+    - Repository unavailable (clone/auth failure) or no evidence at all: routes to the
+      EvidenceMissing handler instead of asking three Judges to argue over nothing.
     """
     evidences = state.get("evidences", {})
-    if evidences:
-        return "proceed_to_judges"
-    return "evidence_missing"
+    if not any(evidences.values()):
+        return "EvidenceMissing"
+    repo_dims = [d for d in state.get("rubric_dimensions", []) if d.get("target_artifact") == "github_repo"]
+    repo_evs = evidences.get("github_repo", [])
+    if repo_dims and (not repo_evs or all(any(REPO_UNAVAILABLE in g for g in e.gaps) for e in repo_evs)):
+        return "EvidenceMissing"
+    return ["Prosecutor", "Defense", "TechLead"]
 
 
-def build_auditor_graph() -> StateGraph:
+def build_auditor_graph():
     """
-    Constructs the Hierarchical LangGraph StateGraph with double parallel fan-out/fan-in architecture:
-    START -> [RepoInvestigator, DocAnalyst, VisionInspector] -> EvidenceAggregator -> [Prosecutor, Defense, TechLead] -> ChiefJustice -> END
+    Hierarchical StateGraph with two parallel fan-out / fan-in stages:
+
+    START -> ContextBuilder -> [RepoInvestigator || DocAnalyst || VisionInspector]
+          -> EvidenceAggregator -(conditional)-> [Prosecutor || Defense || TechLead] -> ChiefJustice -> END
+                                 \\-> EvidenceMissing -> ChiefJustice
     """
     builder = StateGraph(AgentState)
 
-    # Add Detective Nodes (Layer 1)
+    # Layer 0: the Constitution
+    builder.add_node("ContextBuilder", context_builder_node)
+
+    # Layer 1: Detectives + fan-in
     builder.add_node("RepoInvestigator", repo_investigator_node)
     builder.add_node("DocAnalyst", doc_analyst_node)
     builder.add_node("VisionInspector", vision_inspector_node)
     builder.add_node("EvidenceAggregator", evidence_aggregator_node)
+    builder.add_node("EvidenceMissing", evidence_missing_node)
 
-    # Add Judicial Nodes (Layer 2)
+    # Layer 2: the Dialectical Bench
     builder.add_node("Prosecutor", prosecutor_node)
     builder.add_node("Defense", defense_node)
     builder.add_node("TechLead", tech_lead_node)
 
-    # Add Supreme Court Synthesis Node (Layer 3)
+    # Layer 3: the Supreme Court
     builder.add_node("ChiefJustice", chief_justice_node)
 
-    # --- Wire Graph Edges ---
+    builder.add_edge(START, "ContextBuilder")
 
-    # 1. Detective Parallel Fan-Out from START
-    builder.add_edge(START, "RepoInvestigator")
-    builder.add_edge(START, "DocAnalyst")
-    builder.add_edge(START, "VisionInspector")
+    # Detective fan-out: three unconditional edges from one node run in the same superstep
+    builder.add_edge("ContextBuilder", "RepoInvestigator")
+    builder.add_edge("ContextBuilder", "DocAnalyst")
+    builder.add_edge("ContextBuilder", "VisionInspector")
 
-    # 2. Detective Fan-In to EvidenceAggregator
-    builder.add_edge("RepoInvestigator", "EvidenceAggregator")
-    builder.add_edge("DocAnalyst", "EvidenceAggregator")
-    builder.add_edge("VisionInspector", "EvidenceAggregator")
+    # Detective fan-in: a join edge waits for ALL detectives before the aggregator runs
+    builder.add_edge(["RepoInvestigator", "DocAnalyst", "VisionInspector"], "EvidenceAggregator")
 
-    # 3. Conditional Edge check after EvidenceAggregator
+    # Judge fan-out (or failure route), decided by the evidence health check
     builder.add_conditional_edges(
         "EvidenceAggregator",
-        check_evidence_health,
-        {
-            "proceed_to_judges": "Prosecutor",
-            "evidence_missing": "ChiefJustice",
-        },
+        route_after_aggregation,
+        ["Prosecutor", "Defense", "TechLead", "EvidenceMissing"],
     )
 
-    # 4. Judicial Parallel Fan-Out from EvidenceAggregator to Defense & TechLead as well
-    builder.add_edge("EvidenceAggregator", "Defense")
-    builder.add_edge("EvidenceAggregator", "TechLead")
+    # Judge fan-in: ChiefJustice waits for all three opinions lists
+    builder.add_edge(["Prosecutor", "Defense", "TechLead"], "ChiefJustice")
+    builder.add_edge("EvidenceMissing", "ChiefJustice")
 
-    # 5. Judicial Fan-In to ChiefJustice
-    builder.add_edge("Prosecutor", "ChiefJustice")
-    builder.add_edge("Defense", "ChiefJustice")
-    builder.add_edge("TechLead", "ChiefJustice")
-
-    # 6. Supreme Court to END
     builder.add_edge("ChiefJustice", END)
-
     return builder.compile()
 
 
