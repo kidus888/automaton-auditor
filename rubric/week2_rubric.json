@@ -2,7 +2,8 @@
   "rubric_metadata": {
     "rubric_name": "Week 2: The Automaton Auditor Self-Evaluation",
     "grading_target": "Week 2 Auditor Repository & Architectural Report",
-    "version": "3.0.0"
+    "version": "3.1.0",
+    "notes": "Ten forensic dimensions refining the four spec dimensions: forensic_accuracy_code -> git_forensic_analysis/state_management_rigor/safe_tool_engineering; langgraph_architecture -> graph_orchestration; judicial_nuance -> structured_output_enforcement/judicial_nuance/chief_justice_synthesis; forensic_accuracy_docs -> theoretical_depth/report_accuracy/swarm_visual."
   },
   "dimensions": [
     {
@@ -11,7 +12,13 @@
       "target_artifact": "github_repo",
       "forensic_instruction": "Run 'git log --oneline --reverse' on the cloned repository. Count the total number of commits. Check if the commit history tells a progression story: Environment Setup -> Tool Engineering -> Graph Orchestration. Extract all commit messages and timestamps. Flag if there is a single 'init' commit or a 'bulk upload' pattern with no iterative development.",
       "success_pattern": "More than 3 commits showing clear progression from setup to tool engineering to graph orchestration. Atomic, step-by-step history with meaningful commit messages.",
-      "failure_pattern": "Single 'init' commit or bulk upload of all code at once. No iterative development visible. Timestamps clustered within minutes."
+      "failure_pattern": "Single 'init' commit or bulk upload of all code at once. No iterative development visible. Timestamps clustered within minutes.",
+      "judicial_logic": {
+        "prosecutor": "If there are 3 or fewer commits, or the timestamps cluster within minutes, charge with 'Bulk Upload Concealment'. Score max 2. A shallow clone that hides history is not evidence of progression.",
+        "defense": "If commits tell a story of struggle and iteration (fixes, refactors, tests added after features), argue for a higher score on Engineering Process even if messages are terse.",
+        "tech_lead": "Verify the progression Environment Setup -> Tool Engineering -> Graph Orchestration is visible in commit order. Atomic commits that each leave the repo working score 5."
+      },
+      "remediation": "Commit in atomic steps that follow Environment Setup -> Tool Engineering -> Graph Orchestration; avoid squashing everything into one 'init' commit and push the full (non-shallow) history."
     },
     {
       "id": "state_management_rigor",
@@ -19,7 +26,13 @@
       "target_artifact": "github_repo",
       "forensic_instruction": "Scan for 'src/state.py' or equivalent state definitions in 'src/graph.py'. Use AST parsing (not regex) to find classes inheriting from 'BaseModel' (Pydantic) or 'TypedDict'. Verify that the state actively maintains a collection of 'Evidence' objects and a list of 'JudicialOpinion' objects. Check for the use of 'operator.add' and 'operator.ior' as state reducers in 'Annotated' type hints to prevent data overwriting during parallel execution. Capture the full code snippet of the core 'AgentState' definition.",
       "success_pattern": "'AgentState' uses TypedDict or BaseModel with Annotated reducers. 'Evidence' and 'JudicialOpinion' are Pydantic BaseModel classes with typed fields. Reducers like 'operator.add' (for lists) and 'operator.ior' (for dicts) are present.",
-      "failure_pattern": "Plain Python dicts used for state. No Pydantic models. No reducers, meaning parallel agents will overwrite each other's data."
+      "failure_pattern": "Plain Python dicts used for state. No Pydantic models. No reducers, meaning parallel agents will overwrite each other's data.",
+      "judicial_logic": {
+        "prosecutor": "If AgentState is a plain dict, or Evidence/JudicialOpinion are not Pydantic BaseModels, charge with 'Dict Soup Negligence'. If Pydantic is missing entirely, score max 2.",
+        "defense": "Credit typed state even when one reducer is missing, if the parallel writers write to disjoint keys.",
+        "tech_lead": "Assess the state reducers. Are 'operator.add' or 'operator.ior' used correctly on every key that parallel nodes write, to prevent data loss during parallel execution?"
+      },
+      "remediation": "In src/state.py: define Evidence and JudicialOpinion as pydantic.BaseModel, define AgentState as a TypedDict, and annotate every key written by parallel nodes with a reducer (Annotated[Dict[...], operator.ior], Annotated[List[...], operator.add])."
     },
     {
       "id": "graph_orchestration",
@@ -27,7 +40,13 @@
       "target_artifact": "github_repo",
       "forensic_instruction": "Scan for the 'StateGraph' builder instantiation in 'src/graph.py'. Use AST parsing to analyze 'builder.add_edge()' and 'builder.add_conditional_edges()' calls. Determine if the Detectives (RepoInvestigator, DocAnalyst, VisionInspector) branch out from a single node and run concurrently (fan-out). Verify there is a synchronization node ('EvidenceAggregator' or equivalent) that collects all evidence before the Judges are invoked (fan-in). Verify the Judges (Prosecutor, Defense, TechLead) also fan-out in parallel from the aggregation node and fan-in before the ChiefJustice. Check for conditional edges that handle 'Evidence Missing' or 'Node Failure' scenarios. Capture the specific Python block defining the graph's nodes and edges.",
       "success_pattern": "Two distinct parallel fan-out/fan-in patterns: one for Detectives, one for Judges. Conditional edges handle error states. Graph structure: START -> [Detectives in parallel] -> EvidenceAggregator -> [Judges in parallel] -> ChiefJustice -> END.",
-      "failure_pattern": "Purely linear flow (RepoInvestigator -> DocAnalyst -> Judge -> End). No parallel branches. No synchronization node. No conditional edges for error handling."
+      "failure_pattern": "Purely linear flow (RepoInvestigator -> DocAnalyst -> Judge -> End). No parallel branches. No synchronization node. No conditional edges for error handling.",
+      "judicial_logic": {
+        "prosecutor": "If the graph is purely linear (A->B->C), charge with 'Orchestration Fraud'. Score 1. Keyword mentions of 'parallel' without fan-out edges do not count.",
+        "defense": "Support simpler graph designs if they implement robust 'State' transitions and Pydantic validation at every node.",
+        "tech_lead": "Determine if the fan-in synchronization correctly aggregates lists of evidence before passing them to the judicial bench, and whether conditional edges handle 'Evidence Missing' / 'Node Failure'."
+      },
+      "remediation": "In src/graph.py: fan the three Detectives out from one node, join them into an EvidenceAggregator (builder.add_edge([...], 'EvidenceAggregator')), fan the three Judges out from the aggregator, join them into ChiefJustice, and add add_conditional_edges(...) routing to an evidence-missing / failure handler."
     },
     {
       "id": "safe_tool_engineering",
@@ -35,7 +54,13 @@
       "target_artifact": "github_repo",
       "forensic_instruction": "Scan 'src/tools/' for the repository cloning logic. Verify that 'tempfile.TemporaryDirectory()' or equivalent sandboxing is used for git clone operations. Check for raw 'os.system()' calls -- these are a security violation. Verify that 'subprocess.run()' or equivalent is used with proper error handling (capturing stdout/stderr, checking return codes). Ensure the cloned repo path is never the live working directory. Check that git authentication errors are handled gracefully. Capture the specific Python function responsible for executing the repository clone.",
       "success_pattern": "All git operations run inside 'tempfile.TemporaryDirectory()'. 'subprocess.run()' used with error handling. No raw 'os.system()' calls. Authentication failures caught and reported.",
-      "failure_pattern": "Raw 'os.system(\"git clone <url>\")' drops code into the live working directory. No error handling around shell commands. No input sanitization on the repo URL."
+      "failure_pattern": "Raw 'os.system(\"git clone <url>\")' drops code into the live working directory. No error handling around shell commands. No input sanitization on the repo URL.",
+      "judicial_logic": {
+        "prosecutor": "If tool execution relies on raw 'os.system' or 'shell=True' without error handling or sandboxing, charge with 'Security Negligence'. Score 1.",
+        "defense": "Credit defensive error handling (timeouts, captured stderr, graceful auth failures) even if sandboxing is partial.",
+        "tech_lead": "Clones must land in tempfile.TemporaryDirectory(), use list-form subprocess args, validate the URL, and never import or execute the audited code."
+      },
+      "remediation": "In src/tools/: clone with subprocess.run(['git', 'clone', '--', url, tmpdir], capture_output=True, timeout=...) inside tempfile.TemporaryDirectory(); validate the URL, check returncode, and remove every os.system / shell=True call."
     },
     {
       "id": "structured_output_enforcement",
@@ -43,7 +68,13 @@
       "target_artifact": "github_repo",
       "forensic_instruction": "Scan Judge nodes in 'src/nodes/judges.py'. Verify that LLMs are invoked using '.with_structured_output()' or '.bind_tools()' bound to the Pydantic 'JudicialOpinion' schema. Check that the output includes 'score' (int), 'argument' (str), and 'cited_evidence' (list). Verify there is retry logic or error handling if a Judge returns freeform text instead of structured JSON. Capture the code block responsible for querying the Judge LLMs.",
       "success_pattern": "All Judge LLM calls use '.with_structured_output(JudicialOpinion)' or equivalent. Retry logic exists for malformed outputs. Output is validated against the Pydantic schema before being added to state.",
-      "failure_pattern": "Judge nodes call LLMs with plain prompts and parse freeform text responses. No Pydantic validation on output. No retry on parse failure."
+      "failure_pattern": "Judge nodes call LLMs with plain prompts and parse freeform text responses. No Pydantic validation on output. No retry on parse failure.",
+      "judicial_logic": {
+        "prosecutor": "If Judge nodes return freeform text and lack Pydantic validation for structured JSON output, charge with 'Hallucination Liability'. Score max 2.",
+        "defense": "Credit partial enforcement (e.g. JSON-mode plus manual Pydantic validation) as intent toward structured output.",
+        "tech_lead": "Verify .with_structured_output(JudicialOpinion) or .bind_tools([JudicialOpinion]) and a retry loop that rejects free text before it reaches state."
+      },
+      "remediation": "In src/nodes/judges.py: query each judge with llm.with_structured_output(JudicialOpinion) and wrap the call in a bounded retry loop that re-prompts on validation errors instead of accepting free text."
     },
     {
       "id": "judicial_nuance",
@@ -51,7 +82,13 @@
       "target_artifact": "github_repo",
       "forensic_instruction": "Scan 'src/nodes/judges.py' or prompt templates. Verify that Prosecutor, Defense, and Tech Lead personas have distinct, conflicting system prompts. Compare the three prompts -- if they share more than 50% of text, flag as 'Persona Collusion'. Check if the Prosecutor prompt includes adversarial language and instructions to look for gaps, security flaws, and laziness. Check if the Defense prompt includes instructions to reward effort, intent, and creative workarounds. Check if the Tech Lead prompt focuses on architectural soundness, maintainability, and practical viability. Verify the graph forces all three judges to run in parallel on the same evidence for each criterion.",
       "success_pattern": "Three clearly distinct personas with conflicting philosophies. Prompts actively instruct the model to be adversarial (Prosecutor), forgiving (Defense), or pragmatic (Tech Lead). Judges produce genuinely different scores and arguments for the same evidence.",
-      "failure_pattern": "Single agent acts as 'The Grader' with no persona separation. Or three judges exist but share 90% of prompt text, producing near-identical outputs. Scores are random or purely praise/criticism without nuance."
+      "failure_pattern": "Single agent acts as 'The Grader' with no persona separation. Or three judges exist but share 90% of prompt text, producing near-identical outputs. Scores are random or purely praise/criticism without nuance.",
+      "judicial_logic": {
+        "prosecutor": "If the three judges share 90% of the same prompt text, charge with 'Persona Collusion'. Score max 2. If outputs are free text, charge with 'Hallucination Liability'.",
+        "defense": "Look for specific prompt instructions that force the model to be 'contrarian' or 'forgiving'.",
+        "tech_lead": "Evaluate if the judges successfully map their opinions back to specific rubric criteria IDs and receive per-criterion judicial_logic from the rubric."
+      },
+      "remediation": "In src/nodes/judges.py: give Prosecutor, Defense and TechLead separate system prompts with conflicting philosophies (keep pairwise overlap well under 50%) and inject each dimension's judicial_logic for that persona."
     },
     {
       "id": "chief_justice_synthesis",
@@ -59,7 +96,13 @@
       "target_artifact": "github_repo",
       "forensic_instruction": "Scan 'src/nodes/justice.py' for the ChiefJusticeNode implementation. Verify the conflict resolution uses hardcoded deterministic Python logic, not just an LLM prompt. Check for these specific rules: (1) Rule of Security -- if the Prosecutor identifies a confirmed security vulnerability, the score is capped at 3 regardless of Defense arguments. (2) Rule of Evidence -- if the Defense claims 'Deep Metacognition' but Detective evidence shows the artifact is missing, the Defense is overruled. (3) Rule of Functionality -- if the Tech Lead confirms the architecture is modular, this carries the highest weight for the Architecture criterion. Check if score variance > 2 triggers a specific re-evaluation rule. Verify the output is a structured Markdown report, not a console print.",
       "success_pattern": "Deterministic Python if/else logic implementing named rules (security override, fact supremacy, functionality weight). Score variance triggers specific re-evaluation. Output is a Markdown file with Executive Summary, Criterion Breakdown (with dissent), and Remediation Plan.",
-      "failure_pattern": "ChiefJustice is just another LLM prompt that averages the three judge scores. No hardcoded rules. No dissent summary. Output is console text or unstructured."
+      "failure_pattern": "ChiefJustice is just another LLM prompt that averages the three judge scores. No hardcoded rules. No dissent summary. Output is console text or unstructured.",
+      "judicial_logic": {
+        "prosecutor": "If the Chief Justice is just an LLM prompt or an average of the three scores, charge with 'Synthesis Abdication'. Score max 2.",
+        "defense": "If synthesis is an LLM prompt but the Judge personas are highly distinct and actively disagree, request partial credit (Score 3 or 4): 'Role Separation was successful, yielding true dialectical tension.'",
+        "tech_lead": "Verify named deterministic rules (security override, fact supremacy, functionality weight, variance re-evaluation) and a Markdown report with Executive Summary -> Criterion Breakdown -> Remediation Plan."
+      },
+      "remediation": "In src/nodes/justice.py: replace averaging / LLM synthesis with named deterministic rules (security cap at 3, fact supremacy, functionality weight, variance > 2 re-evaluation) and write a Markdown file with Executive Summary -> Criterion Breakdown -> Remediation Plan."
     },
     {
       "id": "theoretical_depth",
@@ -67,7 +110,13 @@
       "target_artifact": "pdf_report",
       "forensic_instruction": "Search the PDF report for these specific terms: 'Dialectical Synthesis', 'Fan-In / Fan-Out', 'Metacognition', 'State Synchronization'. Determine if the term appears in a substantive architectural explanation or is just a buzzword dropped in the executive summary. Check if the report explains HOW the architecture executes these concepts, not just that they exist. Flag terms that appear without supporting explanation as 'Keyword Dropping'.",
       "success_pattern": "Terms appear in detailed architectural explanations. The report explains how Dialectical Synthesis is implemented via three parallel judge personas. Fan-In/Fan-Out is tied to specific graph edges. Metacognition is connected to the system evaluating its own evaluation quality.",
-      "failure_pattern": "Terms appear only in the executive summary or introduction. No connection to actual implementation. 'We used Dialectical Synthesis' with no explanation of how."
+      "failure_pattern": "Terms appear only in the executive summary or introduction. No connection to actual implementation. 'We used Dialectical Synthesis' with no explanation of how.",
+      "judicial_logic": {
+        "prosecutor": "If concepts appear only in the executive summary or without implementation detail, charge with 'Keyword Dropping'. Score max 2.",
+        "defense": "Identify sections where the trainee demonstrates deep alignment with Multi-Agent System theories.",
+        "tech_lead": "Verify if the architectural notes provide enough detail for a third party to recreate the swarm."
+      },
+      "remediation": "In the PDF report: explain how Dialectical Synthesis, Fan-In/Fan-Out, Metacognition and State Synchronization are executed, tying each to concrete nodes, edges and reducers rather than mentioning them only in the summary."
     },
     {
       "id": "report_accuracy",
@@ -75,7 +124,13 @@
       "target_artifact": "pdf_report",
       "forensic_instruction": "Extract all file paths mentioned in the PDF report (e.g., 'We isolated the AST logic in src/tools/ast_parser.py', 'We implemented parallel Judges in src/nodes/judges.py'). Cross-reference each claimed file path against the evidence collected by the RepoInvestigator. Build two lists: (1) Verified Paths -- files that the report mentions and actually exist in the repo. (2) Hallucinated Paths -- files the report claims exist but the RepoInvestigator found no evidence of. Flag any claims about features (e.g., 'We implemented parallel Judges') where the code evidence contradicts the claim.",
       "success_pattern": "All file paths mentioned in the report exist in the repo. Feature claims match code evidence. Zero hallucinated paths.",
-      "failure_pattern": "Report references files that do not exist. Claims parallel execution but code shows linear flow. Multiple hallucinated paths detected."
+      "failure_pattern": "Report references files that do not exist. Claims parallel execution but code shows linear flow. Multiple hallucinated paths detected.",
+      "judicial_logic": {
+        "prosecutor": "If the report claims files or features that are not present in the code, charge with 'Auditor Hallucination'. Score 1.",
+        "defense": "Distinguish forward-looking plans (clearly marked as planned) from false claims of existing work.",
+        "tech_lead": "Every cited path must resolve in the repo manifest and every feature claim must match the code detective's evidence."
+      },
+      "remediation": "In the PDF report: remove or correct every cited path that does not exist in the repository, and only claim features the code actually implements."
     },
     {
       "id": "swarm_visual",
@@ -83,7 +138,13 @@
       "target_artifact": "pdf_images",
       "forensic_instruction": "Extract images from the PDF report. Classify each diagram: is it an accurate LangGraph State Machine diagram, a sequence diagram, or just generic flowchart boxes? Check if the diagram explicitly visualizes the parallel split: START -> [Detectives in parallel] -> Evidence Aggregation -> [Prosecutor || Defense || TechLead in parallel] -> Chief Justice Synthesis -> END. Verify the diagram distinguishes between parallel branches and sequential steps. Flag diagrams that show a simple linear pipeline as 'Misleading Architecture Visual'.",
       "success_pattern": "Diagram accurately represents the StateGraph with clear parallel branches for both Detectives and Judges. Fan-out and fan-in points are visually distinct. Flow matches the actual code architecture.",
-      "failure_pattern": "Generic box-and-arrow diagram with no indication of parallelism. Or no diagram present at all. Diagram shows linear flow that contradicts the parallel architecture claimed in the report."
+      "failure_pattern": "Generic box-and-arrow diagram with no indication of parallelism. Or no diagram present at all. Diagram shows linear flow that contradicts the parallel architecture claimed in the report.",
+      "judicial_logic": {
+        "prosecutor": "If the diagram shows a linear pipeline while the report claims parallelism, charge with 'Misleading Architecture Visual'. Score max 2.",
+        "defense": "Credit text/mermaid diagrams that accurately encode the fan-out/fan-in structure even if not rendered as images.",
+        "tech_lead": "The diagram must match the compiled graph: both parallel stages, the aggregation node, and the conditional error route."
+      },
+      "remediation": "In the PDF report: include a diagram that shows START -> [Detectives in parallel] -> EvidenceAggregator -> [Prosecutor || Defense || TechLead] -> ChiefJustice -> END, matching src/graph.py."
     }
   ],
   "synthesis_rules": {
@@ -91,6 +152,7 @@
     "fact_supremacy": "Forensic evidence (facts from Detectives) always overrules Judicial opinion (interpretation from Judges). If the Defense claims 'Deep Metacognition' but the RepoInvestigator found no supporting code, the Defense is overruled for hallucination.",
     "functionality_weight": "If the Tech Lead confirms the architecture is modular and workable, this carries the highest weight for the 'Graph Orchestration Architecture' criterion.",
     "dissent_requirement": "The Chief Justice must summarize why the Prosecutor and Defense disagreed in the final report. Every criterion with a score variance > 2 must include an explicit dissent explanation.",
-    "variance_re_evaluation": "If score variance across the three judges exceeds 2 for any criterion (e.g., Prosecutor says 1, Defense says 5), trigger a re-evaluation of the specific evidence cited by each judge before rendering the final score."
+    "variance_re_evaluation": "If score variance across the three judges exceeds 2 for any criterion (e.g., Prosecutor says 1, Defense says 5), trigger a re-evaluation of the specific evidence cited by each judge before rendering the final score.",
+    "statute_caps": "Orchestration Fraud (purely linear graph) caps graph_orchestration at 1. Hallucination Liability (judges without structured output) and Persona Collusion cap judicial_nuance at 2."
   }
 }
