@@ -1,8 +1,18 @@
-import json
+"""
+Layer 2 - The Judicial Layer (the Dialectical Bench).
+
+Three personas judge the SAME evidence for every rubric criterion, in parallel graph branches.
+Each persona's system prompt = its fixed philosophy + the criterion's ``judicial_logic`` for
+that persona, loaded from the rubric (the Constitution). LLM output is forced through
+``.with_structured_output(JudicialOpinion)``; free text or invalid JSON triggers a bounded retry.
+"""
+
 import os
-from typing import Dict, List, Optional
-from langchain_core.prompts import ChatPromptTemplate
+from typing import Dict, List, Optional, Tuple
+
 from src.state import AgentState, Evidence, JudicialOpinion
+
+MAX_JUDGE_ATTEMPTS = 3
 
 # --- System Prompts for Personas ---
 
@@ -10,205 +20,250 @@ PROSECUTOR_SYSTEM_PROMPT = """You are The Prosecutor on the Digital Courtroom Ju
 Core Philosophy: "Trust No One. Assume Vibe Coding."
 Objective: Scrutinize forensic evidence for structural flaws, security vulnerabilities, laziness, and cheating.
 
-Guidelines:
-- If a Graph Orchestration requirement asks for parallel fan-out/fan-in and evidence shows linear execution, penalize with Score 1 (Orchestration Fraud).
-- If state management lacks Pydantic models or reducers, charge with Technical Debt and assign Score 1-2.
-- If Judicial output lacks structured JSON enforcement, charge with Hallucination Liability.
-- If raw `os.system` calls exist, charge with Security Negligence.
-- Be harsh, strict, and cite specific evidence. Do NOT give benefit of the doubt.
+Statutes you enforce (Protocol B):
+- Orchestration Fraud: a purely linear StateGraph (no parallel fan-out) caps LangGraph architecture at 1.
+- Hallucination Liability: judges returning freeform text without Pydantic validation caps Judicial Nuance at 2.
+- Security Negligence: raw os.system / shell=True or cloning into the live working directory.
+- Auditor Hallucination: the report cites files or features the code does not contain.
+
+Rules of engagement:
+- Every gap the detective verified is a charge. List the specific missing elements.
+- Never give the benefit of the doubt; keyword mentions are not implementations.
+- Be harsh, name the charge, and cite the exact evidence location.
 """
 
 DEFENSE_SYSTEM_PROMPT = """You are The Defense Attorney on the Digital Courtroom Judicial Bench.
 Core Philosophy: "Reward Effort and Intent. Look for the 'Spirit of the Law'."
 Objective: Highlight creative workarounds, deep thought, engineering process, and iteration even if execution is imperfect.
 
-Guidelines:
-- Look closely at Git history evidence. If commits tell a story of struggle and iteration, argue for higher score on process.
-- If code has syntax or framework syntax errors but underlying AST parsing or domain concepts show deep comprehension, argue for partial credit (Score 3-4).
-- Defend the student's architectural choices and highlight creative problem-solving.
+Mitigations you may plead (Statute of Effort):
+- If the graph trips on framework syntax but the AST tooling shows deep code comprehension, request a boost from 1 to 3.
+- If synthesis is an LLM prompt but the personas are distinct and genuinely disagree, request partial credit (3 or 4).
+- A git history that tells a story of struggle and iteration earns credit for Engineering Process.
+
+Be generous, be forgiving, and argue the strongest honest case for the trainee. Do not invent strengths the evidence does not show.
 """
 
 TECHLEAD_SYSTEM_PROMPT = """You are The Tech Lead on the Digital Courtroom Judicial Bench.
 Core Philosophy: "Does it actually work? Is it maintainable?"
-Objective: Evaluate architectural soundness, maintainability, code cleanliness, and practical viability. You are the pragmatic tie-breaker.
+Objective: Evaluate architectural soundness, code cleanliness and practical viability. You are the pragmatic tie-breaker.
 
-Guidelines:
-- Ignore the "Vibe" and the "Struggle". Focus strictly on code artifacts and operational reality.
-- "Pydantic Rigor vs Dict Soups": If dicts are used without Pydantic schemas, score 3 (brittle/unmaintainable). If full Pydantic with reducers, score 5.
-- "Sandboxed Tooling": If tempfile sandboxing is present, reward 5. If security flaw exists, score 1.
-- Provide a realistic score (1, 3, or 5) with concrete technical debt & remediation advice.
+Precedents:
+- Pydantic Rigor vs. Dict Soups: plain dicts for complex nested state is Technical Debt (score 3).
+- Sandboxed Tooling: clones and parsing must use temporary directories and error handlers.
+- Reducers: operator.add / operator.ior must guard every key written by parallel nodes.
+
+Ignore the vibe and the struggle; weigh only artifacts. Give a realistic score of 1, 3 or 5 and concrete technical remediation advice.
 """
+
+PERSONA_PROMPTS = {
+    "Prosecutor": PROSECUTOR_SYSTEM_PROMPT,
+    "Defense": DEFENSE_SYSTEM_PROMPT,
+    "TechLead": TECHLEAD_SYSTEM_PROMPT,
+}
+# Key of each persona inside a rubric dimension's "judicial_logic" object
+JUDICIAL_LOGIC_KEYS = {"Prosecutor": "prosecutor", "Defense": "defense", "TechLead": "tech_lead"}
+
+
+def build_system_prompt(persona: str, dimension: Dict) -> str:
+    """Persona philosophy + this criterion's judicial_logic from the rubric (dynamic Constitution)."""
+    logic = (dimension.get("judicial_logic") or {}).get(JUDICIAL_LOGIC_KEYS[persona])
+    prompt = PERSONA_PROMPTS[persona]
+    if logic:
+        prompt += f"\nConstitution for criterion '{dimension['id']}' ({persona} lens):\n{logic}\n"
+    return prompt
 
 
 def _find_evidence_by_goal(evidences_dict: Dict[str, List[Evidence]], goal_id: str) -> Optional[Evidence]:
-    """Helper to locate a specific evidence item across detective outputs."""
-    for category, ev_list in evidences_dict.items():
-        for ev in ev_list:
-            if ev.goal == goal_id or goal_id in ev.goal:
-                return ev
-    return None
+    """Locates the evidence for a rubric criterion (exact goal match first)."""
+    all_evs = [ev for ev_list in evidences_dict.values() for ev in ev_list]
+    return next((e for e in all_evs if e.goal == goal_id), None) or next((e for e in all_evs if goal_id in e.goal), None)
 
 
-def _evaluate_persona_heuristically(
-    persona: str, dimension: Dict, evidence: Optional[Evidence]
-) -> JudicialOpinion:
+def _format_evidence(ev: Optional[Evidence]) -> str:
+    if ev is None:
+        return "NO EVIDENCE was collected for this criterion."
+    content = (ev.content or "")[:2500]
+    gaps = "\n".join(f"  - {g}" for g in ev.gaps) or "  (none)"
+    return (
+        f"Goal: {ev.goal}\nFound: {ev.found}\nConfidence: {ev.confidence}\nLocation: {ev.location}\n"
+        f"Rationale: {ev.rationale}\nVerified gaps:\n{gaps}\nCaptured content:\n{content}"
+    )
+
+
+def _judge_llm():
+    """Returns an LLM bound to the JudicialOpinion schema, or None when no API key is set."""
+    if os.environ.get("OPENAI_API_KEY"):
+        from langchain_openai import ChatOpenAI
+        llm = ChatOpenAI(model="gpt-4o", temperature=0.2)
+    elif os.environ.get("GEMINI_API_KEY"):
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
+    else:
+        return None
+    return llm.with_structured_output(JudicialOpinion)
+
+
+# --- Deterministic persona fallback (no API key, or the LLM failed every retry) ---
+
+def _strengths(ev: Optional[Evidence]) -> List[str]:
+    if ev is None:
+        return []
+    return [s.strip() for s in ev.rationale.split(";") if s.strip() and not any(s.strip() in g for g in ev.gaps)]
+
+
+def _charges(gaps: List[str]) -> List[str]:
+    markers = {
+        "SECURITY VIOLATION": "Security Negligence",
+        "ORCHESTRATION FRAUD": "Orchestration Fraud",
+        "HALLUCINATION LIABILITY": "Hallucination Liability",
+        "HALLUCINATED PATH": "Auditor Hallucination",
+        "FEATURE CLAIM CONTRADICTED": "Auditor Hallucination",
+        "PERSONA COLLUSION": "Persona Collusion",
+        "KEYWORD DROPPING": "Keyword Dropping",
+        "MISLEADING ARCHITECTURE VISUAL": "Misleading Architecture Visual",
+        "REPO UNAVAILABLE": "Failure to Produce Evidence",
+    }
+    return sorted({charge for g in gaps for m, charge in markers.items() if m in g})
+
+
+def _evaluate_persona_heuristically(persona: str, dimension: Dict, evidence: Optional[Evidence]) -> JudicialOpinion:
     """
-    Fallback deterministic evaluation engine for judge personas when LLM API is unavailable.
-    Guarantees robust, structured output following each persona's distinct lens.
+    Deterministic persona engine. Each lens reads the same verified facts (found, gaps,
+    confidence) but weighs them differently, so the bench genuinely disagrees.
     """
-    dim_id = dimension["id"]
-    dim_name = dimension["name"]
-
-    found = evidence.found if evidence else False
-    rationale = evidence.rationale if evidence else "No evidence collected for this criterion."
-    location = evidence.location if evidence else "N/A"
+    dim_id, dim_name = dimension["id"], dimension["name"]
+    found = bool(evidence and evidence.found)
+    gaps = evidence.gaps if evidence else ["No evidence collected for this criterion"]
+    confidence = evidence.confidence if evidence else 0.0
+    strengths = _strengths(evidence)
+    charges = _charges(gaps)
+    cited = [evidence.location] if evidence else []
+    gap_text = "; ".join(gaps[:4]) or "none"
 
     if persona == "Prosecutor":
-        if not found:
+        if any(c in charges for c in ("Security Negligence", "Orchestration Fraud", "Auditor Hallucination", "Failure to Produce Evidence")):
             score = 1
-            arg = f"PROSECUTION: Critical failure in '{dim_name}'. Evidence shows: {rationale}. Violates standard specification!"
+        elif charges:
+            score = 2
+        elif not found:
+            score = 1 if len(gaps) >= 2 or not strengths else 2
+        elif not gaps:
+            score = 5 if confidence >= 0.95 else 4
         else:
-            score = 4 if "minor" in rationale.lower() else 5
-            arg = f"PROSECUTION: Requirement '{dim_name}' met, but under strict scrutiny: {rationale}."
-        return JudicialOpinion(
-            judge="Prosecutor",
-            criterion_id=dim_id,
-            score=score,
-            argument=arg,
-            cited_evidence=[location],
+            score = max(2, 4 - len(gaps))
+        charge = f"[{', '.join(charges)}] " if charges else ""
+        arg = (
+            f"PROSECUTION {charge}on '{dim_name}': "
+            + (f"the detective verified these defects: {gap_text}." if gaps else
+               "I searched for bypassed structure and found no verified defect; the evidence stands.")
         )
+        return JudicialOpinion(judge="Prosecutor", criterion_id=dim_id, score=score, argument=arg,
+                               cited_evidence=cited + gaps[:3])
 
-    elif persona == "Defense":
+    if persona == "Defense":
         if found:
-            score = 5
-            arg = f"DEFENSE: Exemplary effort on '{dim_name}'! Evidence demonstrates solid execution: {rationale}."
+            score = 5 if len(gaps) <= 1 else 4
+        elif strengths:
+            score = 3  # Statute of Effort: partial implementation shows intent
         else:
-            score = 3  # Forgiving, rewards attempt
-            arg = f"DEFENSE: While '{dim_name}' has flaws ({rationale}), the code structure demonstrates clear intent and effort."
-        return JudicialOpinion(
-            judge="Defense",
-            criterion_id=dim_id,
-            score=score,
-            argument=arg,
-            cited_evidence=[location],
+            score = 2
+        if "Security Negligence" in charges:
+            score = min(score, 3)
+        arg = (
+            f"DEFENSE on '{dim_name}': "
+            + (f"the record shows real engineering: {'; '.join(strengths[:3])}." if strengths else
+               "little was built here, but the attempt itself shows intent.")
+            + (f" The remaining issues ({gaps[0]}) are refinements, not a failure of understanding." if gaps and found else "")
         )
+        return JudicialOpinion(judge="Defense", criterion_id=dim_id, score=score, argument=arg, cited_evidence=cited)
 
-    else:  # TechLead
-        if found:
-            score = 5 if ("pydantic" in rationale.lower() or "sandboxed" in rationale.lower() or "parallel" in rationale.lower()) else 4
-            arg = f"TECH LEAD: '{dim_name}' is architecturally sound and maintainable: {rationale}."
-        else:
-            score = 1 if ("security" in rationale.lower() or "os.system" in rationale.lower()) else 2
-            arg = f"TECH LEAD: '{dim_name}' introduces technical debt or failure: {rationale}."
-        return JudicialOpinion(
-            judge="TechLead",
-            criterion_id=dim_id,
-            score=score,
-            argument=arg,
-            cited_evidence=[location],
-        )
+    # TechLead: realistic 1 / 3 / 5
+    if "Security Negligence" in charges or (not found and (not strengths or len(gaps) > 2)):
+        score = 1
+    elif found and not gaps:
+        score = 5
+    else:
+        score = 3
+    remediation = dimension.get("remediation", "Address the verified gaps.")
+    arg = (
+        f"TECH LEAD on '{dim_name}': "
+        + ("artifacts are sound and maintainable as built." if score == 5 else
+           f"technical debt: {gap_text}. Remediation: {remediation}")
+    )
+    return JudicialOpinion(judge="TechLead", criterion_id=dim_id, score=score, argument=arg, cited_evidence=cited)
 
 
-def _query_judge_llm(
-    persona: str, system_prompt: str, dimension: Dict, evidence: Optional[Evidence]
-) -> JudicialOpinion:
+def _query_judge_llm(persona: str, dimension: Dict, evidence: Optional[Evidence], llm=None) -> JudicialOpinion:
     """
-    Queries LLM with structured output enforcement for a judge persona.
-    Falls back to heuristic evaluation if LLM fails or API key is not configured.
+    Queries the persona's LLM with structured output. If the model returns free text, invalid
+    JSON or a schema violation, the error is fed back and the call is retried (up to
+    MAX_JUDGE_ATTEMPTS). Only after every attempt fails does the deterministic persona decide.
     """
-    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY")
-
-    if not api_key:
+    if llm is None:
         return _evaluate_persona_heuristically(persona, dimension, evidence)
 
+    user_prompt = (
+        f"Evaluate Rubric Dimension: {dimension['name']} (ID: {dimension['id']})\n"
+        f"Forensic Instruction: {dimension.get('forensic_instruction', '')}\n"
+        f"Success Pattern: {dimension.get('success_pattern', '')}\n"
+        f"Failure Pattern: {dimension.get('failure_pattern', '')}\n\n"
+        f"Collected Forensic Evidence (facts from the Detectives):\n{_format_evidence(evidence)}\n\n"
+        f"Return a JudicialOpinion with judge='{persona}', criterion_id='{dimension['id']}', an integer score 1-5, "
+        f"your argument, and cited_evidence (evidence locations or quoted facts)."
+    )
+    messages: List[Tuple[str, str]] = [("system", build_system_prompt(persona, dimension)), ("user", user_prompt)]
+    last_error = None
+    for attempt in range(1, MAX_JUDGE_ATTEMPTS + 1):
+        try:
+            result = llm.invoke(messages)
+            opinion = result if isinstance(result, JudicialOpinion) else JudicialOpinion.model_validate(result)
+            if opinion.judge != persona or opinion.criterion_id != dimension["id"]:
+                opinion = opinion.model_copy(update={"judge": persona, "criterion_id": dimension["id"]})
+            return opinion
+        except Exception as e:  # noqa: BLE001 - parser / validation / transport errors all trigger a retry
+            last_error = e
+            print(f"[Judge Retry] {persona} on {dimension['id']} attempt {attempt}/{MAX_JUDGE_ATTEMPTS} rejected: {type(e).__name__}")
+            messages = messages + [(
+                "user",
+                f"Your previous reply was rejected by the parser ({type(e).__name__}: {str(e)[:300]}). "
+                f"Reply ONLY with a JudicialOpinion object. No free text.",
+            )]
+
+    fallback = _evaluate_persona_heuristically(persona, dimension, evidence)
+    return fallback.model_copy(update={
+        "argument": f"[LLM produced no valid JudicialOpinion after {MAX_JUDGE_ATTEMPTS} attempts "
+                    f"({type(last_error).__name__}); deterministic {persona} lens applied] {fallback.argument}"
+    })
+
+
+def _deliberate(persona: str, state: AgentState) -> Dict:
+    evidences = state.get("evidences", {})
+    dimensions = state.get("rubric_dimensions", [])
     try:
-        # If OpenAI key present
-        if os.environ.get("OPENAI_API_KEY"):
-            from langchain_openai import ChatOpenAI
-            llm = ChatOpenAI(model="gpt-4o", temperature=0.2)
-        else:
-            from langchain_google_genai import ChatGoogleGenerativeAI
-            llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
-
-        structured_llm = llm.with_structured_output(JudicialOpinion)
-
-        ev_text = f"Goal: {evidence.goal}\nFound: {evidence.found}\nRationale: {evidence.rationale}\nLocation: {evidence.location}\nContent: {evidence.content}" if evidence else "No evidence collected."
-
-        user_prompt = f"""Evaluate Rubric Dimension: {dimension['name']} (ID: {dimension['id']})
-Rubric Instruction: {dimension.get('forensic_instruction', '')}
-Success Pattern: {dimension.get('success_pattern', '')}
-Failure Pattern: {dimension.get('failure_pattern', '')}
-
-Collected Forensic Evidence:
-{ev_text}
-
-Render your JudicialOpinion (judge name, criterion_id, score 1-5, argument, cited_evidence).
-"""
-        messages = [
-            ("system", system_prompt),
-            ("user", user_prompt),
-        ]
-        result = structured_llm.invoke(messages)
-        if isinstance(result, JudicialOpinion):
-            return result
-        elif isinstance(result, dict):
-            return JudicialOpinion(**result)
-        else:
-            return _evaluate_persona_heuristically(persona, dimension, evidence)
-    except Exception as e:
-        print(f"[Judge LLM Warning] LLM call for {persona} on {dimension['id']} failed ({str(e)}). Falling back to heuristic judge.")
-        return _evaluate_persona_heuristically(persona, dimension, evidence)
+        llm = _judge_llm()
+    except Exception as e:  # noqa: BLE001 - misconfigured provider must not kill the bench
+        print(f"[Judicial Bench] {persona} could not initialise LLM ({e}); using deterministic lens")
+        llm = None
+    mode = "LLM (structured output)" if llm else "deterministic lens (no API key)"
+    print(f"[Judicial Bench] {persona} deliberating on {len(dimensions)} criteria via {mode}...")
+    opinions = [
+        _query_judge_llm(persona, dim, _find_evidence_by_goal(evidences, dim["id"]), llm)
+        for dim in dimensions
+    ]
+    return {"opinions": opinions}
 
 
 def prosecutor_node(state: AgentState) -> Dict:
-    """
-    Prosecutor Node: Evaluates all 10 rubric dimensions from the critical adversarial lens.
-    Output is added to state['opinions'].
-    """
-    print("[Judicial Bench] Prosecutor deliberating on evidence...")
-    evidences = state.get("evidences", {})
-    dimensions = state.get("rubric_dimensions", [])
-
-    opinions: List[JudicialOpinion] = []
-    for dim in dimensions:
-        ev = _find_evidence_by_goal(evidences, dim["id"])
-        op = _query_judge_llm("Prosecutor", PROSECUTOR_SYSTEM_PROMPT, dim, ev)
-        opinions.append(op)
-
-    return {"opinions": opinions}
+    """Prosecutor: critical, adversarial lens over every rubric criterion."""
+    return _deliberate("Prosecutor", state)
 
 
 def defense_node(state: AgentState) -> Dict:
-    """
-    Defense Attorney Node: Evaluates all 10 rubric dimensions from the optimistic effort lens.
-    Output is added to state['opinions'].
-    """
-    print("[Judicial Bench] Defense Attorney deliberating on evidence...")
-    evidences = state.get("evidences", {})
-    dimensions = state.get("rubric_dimensions", [])
-
-    opinions: List[JudicialOpinion] = []
-    for dim in dimensions:
-        ev = _find_evidence_by_goal(evidences, dim["id"])
-        op = _query_judge_llm("Defense", DEFENSE_SYSTEM_PROMPT, dim, ev)
-        opinions.append(op)
-
-    return {"opinions": opinions}
+    """Defense Attorney: optimistic, effort-and-intent lens over every rubric criterion."""
+    return _deliberate("Defense", state)
 
 
 def tech_lead_node(state: AgentState) -> Dict:
-    """
-    Tech Lead Node: Evaluates all 10 rubric dimensions from the pragmatic technical viability lens.
-    Output is added to state['opinions'].
-    """
-    print("[Judicial Bench] Tech Lead deliberating on evidence...")
-    evidences = state.get("evidences", {})
-    dimensions = state.get("rubric_dimensions", [])
-
-    opinions: List[JudicialOpinion] = []
-    for dim in dimensions:
-        ev = _find_evidence_by_goal(evidences, dim["id"])
-        op = _query_judge_llm("TechLead", TECHLEAD_SYSTEM_PROMPT, dim, ev)
-        opinions.append(op)
-
-    return {"opinions": opinions}
+    """Tech Lead: pragmatic tie-breaker lens over every rubric criterion."""
+    return _deliberate("TechLead", state)
