@@ -1,0 +1,1428 @@
+{
+  "run_id": "f20eee7c-56fe-4418-af03-0c69f2dd170a",
+  "langsmith_project": null,
+  "langsmith_url": null,
+  "repo_url": ".",
+  "pdf_path": "reports/interim_report.md",
+  "overall_score": 4.4,
+  "reasoning_loop": [
+    {
+      "criterion_id": "git_forensic_analysis",
+      "opinions": [
+        {
+          "judge": "Defense",
+          "criterion_id": "git_forensic_analysis",
+          "score": 5,
+          "argument": "DEFENSE on 'Git Forensic Analysis': the record shows real engineering: Found 14 commits over 0.8 hours. Progression Setup -> Tool Engineering -> Graph Orchestration is visible in commit order; 3 fix/refactor/test commit(s) show iteration after initial implementation.",
+          "cited_evidence": [
+            ".git (git log --reverse)"
+          ]
+        },
+        {
+          "judge": "Prosecutor",
+          "criterion_id": "git_forensic_analysis",
+          "score": 5,
+          "argument": "PROSECUTION on 'Git Forensic Analysis': I searched for bypassed structure and found no verified defect; the evidence stands.",
+          "cited_evidence": [
+            ".git (git log --reverse)"
+          ]
+        },
+        {
+          "judge": "TechLead",
+          "criterion_id": "git_forensic_analysis",
+          "score": 5,
+          "argument": "TECH LEAD on 'Git Forensic Analysis': artifacts are sound and maintainable as built.",
+          "cited_evidence": [
+            ".git (git log --reverse)"
+          ]
+        }
+      ],
+      "rules_applied": [],
+      "overruled": [],
+      "dissent": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+      "final_score": 5
+    },
+    {
+      "criterion_id": "state_management_rigor",
+      "opinions": [
+        {
+          "judge": "Defense",
+          "criterion_id": "state_management_rigor",
+          "score": 5,
+          "argument": "DEFENSE on 'State Management Rigor': the record shows real engineering: AgentState inherits TypedDict; Evidence is a Pydantic BaseModel; 'evidences' uses reducer operator.ior.",
+          "cited_evidence": [
+            "src/state.py"
+          ]
+        },
+        {
+          "judge": "Prosecutor",
+          "criterion_id": "state_management_rigor",
+          "score": 5,
+          "argument": "PROSECUTION on 'State Management Rigor': I searched for bypassed structure and found no verified defect; the evidence stands.",
+          "cited_evidence": [
+            "src/state.py"
+          ]
+        },
+        {
+          "judge": "TechLead",
+          "criterion_id": "state_management_rigor",
+          "score": 5,
+          "argument": "TECH LEAD on 'State Management Rigor': artifacts are sound and maintainable as built.",
+          "cited_evidence": [
+            "src/state.py"
+          ]
+        }
+      ],
+      "rules_applied": [],
+      "overruled": [],
+      "dissent": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+      "final_score": 5
+    },
+    {
+      "criterion_id": "graph_orchestration",
+      "opinions": [
+        {
+          "judge": "Defense",
+          "criterion_id": "graph_orchestration",
+          "score": 5,
+          "argument": "DEFENSE on 'Graph Orchestration Architecture': the record shows real engineering: StateGraph instantiated in src/graph.py with 10 nodes and 12 static edges; Detectives fan out in parallel from 'ContextBuilder' -> ['DocAnalyst', 'RepoInvestigator', 'VisionInspector']; 'EvidenceAggregator' synchronizes (fan-in) evidence from ['DocAnalyst', 'RepoInvestigator', 'VisionInspector'].",
+          "cited_evidence": [
+            "src/graph.py"
+          ]
+        },
+        {
+          "judge": "Prosecutor",
+          "criterion_id": "graph_orchestration",
+          "score": 5,
+          "argument": "PROSECUTION on 'Graph Orchestration Architecture': I searched for bypassed structure and found no verified defect; the evidence stands.",
+          "cited_evidence": [
+            "src/graph.py"
+          ]
+        },
+        {
+          "judge": "TechLead",
+          "criterion_id": "graph_orchestration",
+          "score": 5,
+          "argument": "TECH LEAD on 'Graph Orchestration Architecture': artifacts are sound and maintainable as built.",
+          "cited_evidence": [
+            "src/graph.py"
+          ]
+        }
+      ],
+      "rules_applied": [
+        "RULE OF FUNCTIONALITY: Tech Lead confirmed a modular, workable architecture; carries highest weight"
+      ],
+      "overruled": [],
+      "dissent": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+      "final_score": 5
+    },
+    {
+      "criterion_id": "safe_tool_engineering",
+      "opinions": [
+        {
+          "judge": "Defense",
+          "criterion_id": "safe_tool_engineering",
+          "score": 5,
+          "argument": "DEFENSE on 'Safe Tool Engineering': the record shows real engineering: Clones are sandboxed with tempfile.TemporaryDirectory()/mkdtemp(); Clone function located at src/tools/repo_tools.py::clone_repo_sandboxed; clone checks returncode / handles exceptions.",
+          "cited_evidence": [
+            "src/tools/repo_tools.py::clone_repo_sandboxed"
+          ]
+        },
+        {
+          "judge": "Prosecutor",
+          "criterion_id": "safe_tool_engineering",
+          "score": 5,
+          "argument": "PROSECUTION on 'Safe Tool Engineering': I searched for bypassed structure and found no verified defect; the evidence stands.",
+          "cited_evidence": [
+            "src/tools/repo_tools.py::clone_repo_sandboxed"
+          ]
+        },
+        {
+          "judge": "TechLead",
+          "criterion_id": "safe_tool_engineering",
+          "score": 5,
+          "argument": "TECH LEAD on 'Safe Tool Engineering': artifacts are sound and maintainable as built.",
+          "cited_evidence": [
+            "src/tools/repo_tools.py::clone_repo_sandboxed"
+          ]
+        }
+      ],
+      "rules_applied": [],
+      "overruled": [],
+      "dissent": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+      "final_score": 5
+    },
+    {
+      "criterion_id": "structured_output_enforcement",
+      "opinions": [
+        {
+          "judge": "Defense",
+          "criterion_id": "structured_output_enforcement",
+          "score": 5,
+          "argument": "DEFENSE on 'Structured Output Enforcement': the record shows real engineering: Judge LLM bound to Pydantic schema via structured output (JudicialOpinion); Retry loop re-queries the judge on malformed / free-text output.",
+          "cited_evidence": [
+            "src/nodes/judges.py::_judge_llm"
+          ]
+        },
+        {
+          "judge": "Prosecutor",
+          "criterion_id": "structured_output_enforcement",
+          "score": 5,
+          "argument": "PROSECUTION on 'Structured Output Enforcement': I searched for bypassed structure and found no verified defect; the evidence stands.",
+          "cited_evidence": [
+            "src/nodes/judges.py::_judge_llm"
+          ]
+        },
+        {
+          "judge": "TechLead",
+          "criterion_id": "structured_output_enforcement",
+          "score": 5,
+          "argument": "TECH LEAD on 'Structured Output Enforcement': artifacts are sound and maintainable as built.",
+          "cited_evidence": [
+            "src/nodes/judges.py::_judge_llm"
+          ]
+        }
+      ],
+      "rules_applied": [],
+      "overruled": [],
+      "dissent": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+      "final_score": 5
+    },
+    {
+      "criterion_id": "judicial_nuance",
+      "opinions": [
+        {
+          "judge": "Defense",
+          "criterion_id": "judicial_nuance",
+          "score": 5,
+          "argument": "DEFENSE on 'Judicial Nuance and Dialectics': the record shows real engineering: Persona prompts are distinct (pairwise word overlap: Prosecutor/Defense=12%, Prosecutor/TechLead=15%, Defense/TechLead=17%); Prosecutor prompt carries its philosophy (trust no one, harsh, scrutin); Defense prompt carries its philosophy (effort, intent, spirit).",
+          "cited_evidence": [
+            "src/nodes/judges.py"
+          ]
+        },
+        {
+          "judge": "Prosecutor",
+          "criterion_id": "judicial_nuance",
+          "score": 5,
+          "argument": "PROSECUTION on 'Judicial Nuance and Dialectics': I searched for bypassed structure and found no verified defect; the evidence stands.",
+          "cited_evidence": [
+            "src/nodes/judges.py"
+          ]
+        },
+        {
+          "judge": "TechLead",
+          "criterion_id": "judicial_nuance",
+          "score": 5,
+          "argument": "TECH LEAD on 'Judicial Nuance and Dialectics': artifacts are sound and maintainable as built.",
+          "cited_evidence": [
+            "src/nodes/judges.py"
+          ]
+        }
+      ],
+      "rules_applied": [],
+      "overruled": [],
+      "dissent": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+      "final_score": 5
+    },
+    {
+      "criterion_id": "chief_justice_synthesis",
+      "opinions": [
+        {
+          "judge": "Defense",
+          "criterion_id": "chief_justice_synthesis",
+          "score": 5,
+          "argument": "DEFENSE on 'Chief Justice Synthesis Engine': the record shows real engineering: 31 deterministic if-branches in src/nodes/justice.py; Rule of Security (cap at 3) implemented; Rule of Evidence / Fact Supremacy implemented.",
+          "cited_evidence": [
+            "src/nodes/justice.py::chief_justice_node"
+          ]
+        },
+        {
+          "judge": "Prosecutor",
+          "criterion_id": "chief_justice_synthesis",
+          "score": 5,
+          "argument": "PROSECUTION on 'Chief Justice Synthesis Engine': I searched for bypassed structure and found no verified defect; the evidence stands.",
+          "cited_evidence": [
+            "src/nodes/justice.py::chief_justice_node"
+          ]
+        },
+        {
+          "judge": "TechLead",
+          "criterion_id": "chief_justice_synthesis",
+          "score": 5,
+          "argument": "TECH LEAD on 'Chief Justice Synthesis Engine': artifacts are sound and maintainable as built.",
+          "cited_evidence": [
+            "src/nodes/justice.py::chief_justice_node"
+          ]
+        }
+      ],
+      "rules_applied": [],
+      "overruled": [],
+      "dissent": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+      "final_score": 5
+    },
+    {
+      "criterion_id": "theoretical_depth",
+      "opinions": [
+        {
+          "judge": "Defense",
+          "criterion_id": "theoretical_depth",
+          "score": 3,
+          "argument": "DEFENSE on 'Theoretical Depth (Documentation)': the record shows real engineering: 2/4 concepts explained in architectural context (Dialectical Synthesis, Fan-In / Fan-Out); report ingested as 12 chunks..",
+          "cited_evidence": [
+            "reports/interim_report.md"
+          ]
+        },
+        {
+          "judge": "Prosecutor",
+          "criterion_id": "theoretical_depth",
+          "score": 1,
+          "argument": "PROSECUTION on 'Theoretical Depth (Documentation)': the detective verified these defects: 'Metacognition' is never discussed; 'State Synchronization' is never discussed.",
+          "cited_evidence": [
+            "reports/interim_report.md",
+            "'Metacognition' is never discussed",
+            "'State Synchronization' is never discussed"
+          ]
+        },
+        {
+          "judge": "TechLead",
+          "criterion_id": "theoretical_depth",
+          "score": 3,
+          "argument": "TECH LEAD on 'Theoretical Depth (Documentation)': technical debt: 'Metacognition' is never discussed; 'State Synchronization' is never discussed. Remediation: In the PDF report: explain how Dialectical Synthesis, Fan-In/Fan-Out, Metacognition and State Synchronization are executed, tying each to concrete nodes, edges and reducers rather than mentioning them only in the summary.",
+          "cited_evidence": [
+            "reports/interim_report.md"
+          ]
+        }
+      ],
+      "rules_applied": [],
+      "overruled": [],
+      "dissent": "The Prosecutor (1/5) charged: \"PROSECUTION on 'Theoretical Depth (Documentation)': the detective verified these defects: 'Metacognition' is never discussed; 'State Synchronization' is never discussed.\" The Defense (3/5) countered: \"DEFENSE on 'Theoretical Depth (Documentation)': the record shows real engineering: 2/4 concepts explained in architectural context (Dialectical Synthesis, Fan-In / Fan-Out); report ingested as 12 chunks..\" The Tech Lead (3/5) assessed: \"TECH LEAD on 'Theoretical Depth (Documentation)': technical debt: 'Metacognition' is never discussed; 'State Synchronization' is never discussed.\" They disagreed by 2 point(s) because the Prosecutor weighed the verified gaps while the Defense weighed the implemented strengths. No side was overruled; the weighted bench (Tech Lead 40%, Prosecutor 30%, Defense 30%) decided.",
+      "final_score": 2
+    },
+    {
+      "criterion_id": "report_accuracy",
+      "opinions": [
+        {
+          "judge": "Defense",
+          "criterion_id": "report_accuracy",
+          "score": 3,
+          "argument": "DEFENSE on 'Report Accuracy (Cross-Reference)': the record shows real engineering: Cross-referenced 12 cited paths against 31 repository files: 11 verified, 1 hallucinated; 6/6 feature claims match code evidence..",
+          "cited_evidence": [
+            "reports/interim_report.md"
+          ]
+        },
+        {
+          "judge": "Prosecutor",
+          "criterion_id": "report_accuracy",
+          "score": 1,
+          "argument": "PROSECUTION [Auditor Hallucination] on 'Report Accuracy (Cross-Reference)': the detective verified these defects: HALLUCINATED PATH: reports/interim_report.pdf.",
+          "cited_evidence": [
+            "reports/interim_report.md",
+            "HALLUCINATED PATH: reports/interim_report.pdf"
+          ]
+        },
+        {
+          "judge": "TechLead",
+          "criterion_id": "report_accuracy",
+          "score": 3,
+          "argument": "TECH LEAD on 'Report Accuracy (Cross-Reference)': technical debt: HALLUCINATED PATH: reports/interim_report.pdf. Remediation: In the PDF report: remove or correct every cited path that does not exist in the repository, and only claim features the code actually implements.",
+          "cited_evidence": [
+            "reports/interim_report.md"
+          ]
+        }
+      ],
+      "rules_applied": [],
+      "overruled": [],
+      "dissent": "The Prosecutor (1/5) charged: \"PROSECUTION [Auditor Hallucination] on 'Report Accuracy (Cross-Reference)': the detective verified these defects: HALLUCINATED PATH: reports/interim_report.pdf.\" The Defense (3/5) countered: \"DEFENSE on 'Report Accuracy (Cross-Reference)': the record shows real engineering: Cross-referenced 12 cited paths against 31 repository files: 11 verified, 1 hallucinated; 6/6 feature claims match code evidence..\" The Tech Lead (3/5) assessed: \"TECH LEAD on 'Report Accuracy (Cross-Reference)': technical debt: HALLUCINATED PATH: reports/interim_report.pdf.\" They disagreed by 2 point(s) because the Prosecutor weighed the verified gaps while the Defense weighed the implemented strengths. No side was overruled; the weighted bench (Tech Lead 40%, Prosecutor 30%, Defense 30%) decided.",
+      "final_score": 2
+    },
+    {
+      "criterion_id": "swarm_visual",
+      "opinions": [
+        {
+          "judge": "Defense",
+          "criterion_id": "swarm_visual",
+          "score": 5,
+          "argument": "DEFENSE on 'Architectural Diagram Analysis': the record shows real engineering: 0 embedded image(s) extracted; Mermaid flowchart with 14 edges: detective fan-out=True, judge fan-out=True.",
+          "cited_evidence": [
+            "reports/interim_report.md"
+          ]
+        },
+        {
+          "judge": "Prosecutor",
+          "criterion_id": "swarm_visual",
+          "score": 4,
+          "argument": "PROSECUTION on 'Architectural Diagram Analysis': I searched for bypassed structure and found no verified defect; the evidence stands.",
+          "cited_evidence": [
+            "reports/interim_report.md"
+          ]
+        },
+        {
+          "judge": "TechLead",
+          "criterion_id": "swarm_visual",
+          "score": 5,
+          "argument": "TECH LEAD on 'Architectural Diagram Analysis': artifacts are sound and maintainable as built.",
+          "cited_evidence": [
+            "reports/interim_report.md"
+          ]
+        }
+      ],
+      "rules_applied": [],
+      "overruled": [],
+      "dissent": "The Prosecutor (4/5) charged: \"PROSECUTION on 'Architectural Diagram Analysis': I searched for bypassed structure and found no verified defect; the evidence stands.\" The Defense (5/5) countered: \"DEFENSE on 'Architectural Diagram Analysis': the record shows real engineering: 0 embedded image(s) extracted; Mermaid flowchart with 14 edges: detective fan-out=True, judge fan-out=True.\" The Tech Lead (5/5) assessed: \"TECH LEAD on 'Architectural Diagram Analysis': artifacts are sound and maintainable as built.\" They disagreed by 1 point(s) because the Prosecutor weighed the verified gaps while the Defense weighed the implemented strengths. No side was overruled; the weighted bench (Tech Lead 40%, Prosecutor 30%, Defense 30%) decided.",
+      "final_score": 5
+    }
+  ],
+  "node_events": [
+    {
+      "timestamp": "2026-11-19T13:30:39.058689+00:00",
+      "node": "ContextBuilder",
+      "update": {
+        "rubric_dimensions": [
+          {
+            "id": "git_forensic_analysis",
+            "name": "Git Forensic Analysis",
+            "target_artifact": "github_repo",
+            "forensic_instruction": "Run 'git log --oneline --reverse' on the cloned repository. Count the total number of commits. Check if the commit history tells a progression story: Environment Setup -> Tool Engineering -> Graph Orchestration. Extract all commit messages and timestamps. Flag if there is a single 'init' commit or a 'bulk upload' pattern with no iterative development.",
+            "success_pattern": "More than 3 commits showing clear progression from setup to tool engineering to graph orchestration. Atomic, step-by-step history with meaningful commit messages.",
+            "failure_pattern": "Single 'init' commit or bulk upload of all code at once. No iterative development visible. Timestamps clustered within minutes.",
+            "judicial_logic": {
+              "prosecutor": "If there are 3 or fewer commits, or the timestamps cluster within minutes, charge with 'Bulk Upload Concealment'. Score max 2. A shallow clone that hides history is not evidence of progression.",
+              "defense": "If commits tell a story of struggle and iteration (fixes, refactors, tests added after features), argue for a higher score on Engineering Process even if messages are terse.",
+              "tech_lead": "Verify the progression Environment Setup -> Tool Engineering -> Graph Orchestration is visible in commit order. Atomic commits that each leave the repo working score 5."
+            },
+            "remediation": "Commit in atomic steps that follow Environment Setup -> Tool Engineering -> Graph Orchestration; avoid squashing everything into one 'init' commit and push the full (non-shallow) history."
+          },
+          {
+            "id": "state_management_rigor",
+            "name": "State Management Rigor",
+            "target_artifact": "github_repo",
+            "forensic_instruction": "Scan for 'src/state.py' or equivalent state definitions in 'src/graph.py'. Use AST parsing (not regex) to find classes inheriting from 'BaseModel' (Pydantic) or 'TypedDict'. Verify that the state actively maintains a collection of 'Evidence' objects and a list of 'JudicialOpinion' objects. Check for the use of 'operator.add' and 'operator.ior' as state reducers in 'Annotated' type hints to prevent data overwriting during parallel execution. Capture the full code snippet of the core 'AgentState' definition.",
+            "success_pattern": "'AgentState' uses TypedDict or BaseModel with Annotated reducers. 'Evidence' and 'JudicialOpinion' are Pydantic BaseModel classes with typed fields. Reducers like 'operator.add' (for lists) and 'operator.ior' (for dicts) are present.",
+            "failure_pattern": "Plain Python dicts used for state. No Pydantic models. No reducers, meaning parallel agents will overwrite each other's data.",
+            "judicial_logic": {
+              "prosecutor": "If AgentState is a plain dict, or Evidence/JudicialOpinion are not Pydantic BaseModels, charge with 'Dict Soup Negligence'. If Pydantic is missing entirely, score max 2.",
+              "defense": "Credit typed state even when one reducer is missing, if the parallel writers write to disjoint keys.",
+              "tech_lead": "Assess the state reducers. Are 'operator.add' or 'operator.ior' used correctly on every key that parallel nodes write, to prevent data loss during parallel execution?"
+            },
+            "remediation": "In src/state.py: define Evidence and JudicialOpinion as pydantic.BaseModel, define AgentState as a TypedDict, and annotate every key written by parallel nodes with a reducer (Annotated[Dict[...], operator.ior], Annotated[List[...], operator.add])."
+          },
+          {
+            "id": "graph_orchestration",
+            "name": "Graph Orchestration Architecture",
+            "target_artifact": "github_repo",
+            "forensic_instruction": "Scan for the 'StateGraph' builder instantiation in 'src/graph.py'. Use AST parsing to analyze 'builder.add_edge()' and 'builder.add_conditional_edges()' calls. Determine if the Detectives (RepoInvestigator, DocAnalyst, VisionInspector) branch out from a single node and run concurrently (fan-out). Verify there is a synchronization node ('EvidenceAggregator' or equivalent) that collects all evidence before the Judges are invoked (fan-in). Verify the Judges (Prosecutor, Defense, TechLead) also fan-out in parallel from the aggregation node and fan-in before the ChiefJustice. Check for conditional edges that handle 'Evidence Missing' or 'Node Failure' scenarios. Capture the specific Python block defining the graph's nodes and edges.",
+            "success_pattern": "Two distinct parallel fan-out/fan-in patterns: one for Detectives, one for Judges. Conditional edges handle error states. Graph structure: START -> [Detectives in parallel] -> EvidenceAggregator -> [Judges in parallel] -> ChiefJustice -> END.",
+            "failure_pattern": "Purely linear flow (RepoInvestigator -> DocAnalyst -> Judge -> End). No parallel branches. No synchronization node. No conditional edges for error handling.",
+            "judicial_logic": {
+              "prosecutor": "If the graph is purely linear (A->B->C), charge with 'Orchestration Fraud'. Score 1. Keyword mentions of 'parallel' without fan-out edges do not count.",
+              "defense": "Support simpler graph designs if they implement robust 'State' transitions and Pydantic validation at every node.",
+              "tech_lead": "Determine if the fan-in synchronization correctly aggregates lists of evidence before passing them to the judicial bench, and whether conditional edges handle 'Evidence Missing' / 'Node Failure'."
+            },
+            "remediation": "In src/graph.py: fan the three Detectives out from one node, join them into an EvidenceAggregator (builder.add_edge([...], 'EvidenceAggregator')), fan the three Judges out from the aggregator, join them into ChiefJustice, and add add_conditional_edges(...) routing to an evidence-missing / failure handler."
+          },
+          {
+            "id": "safe_tool_engineering",
+            "name": "Safe Tool Engineering",
+            "target_artifact": "github_repo",
+            "forensic_instruction": "Scan 'src/tools/' for the repository cloning logic. Verify that 'tempfile.TemporaryDirectory()' or equivalent sandboxing is used for git clone operations. Check for raw 'os.system()' calls -- these are a security violation. Verify that 'subprocess.run()' or equivalent is used with proper error handling (capturing stdout/stderr, checking return codes). Ensure the cloned repo path is never the live working directory. Check that git authentication errors are handled gracefully. Capture the specific Python function responsible for executing the repository clone.",
+            "success_pattern": "All git operations run inside 'tempfile.TemporaryDirectory()'. 'subprocess.run()' used with error handling. No raw 'os.system()' calls. Authentication failures caught and reported.",
+            "failure_pattern": "Raw 'os.system(\"git clone <url>\")' drops code into the live working directory. No error handling around shell commands. No input sanitization on the repo URL.",
+            "judicial_logic": {
+              "prosecutor": "If tool execution relies on raw 'os.system' or 'shell=True' without error handling or sandboxing, charge with 'Security Negligence'. Score 1.",
+              "defense": "Credit defensive error handling (timeouts, captured stderr, graceful auth failures) even if sandboxing is partial.",
+              "tech_lead": "Clones must land in tempfile.TemporaryDirectory(), use list-form subprocess args, validate the URL, and never import or execute the audited code."
+            },
+            "remediation": "In src/tools/: clone with subprocess.run(['git', 'clone', '--', url, tmpdir], capture_output=True, timeout=...) inside tempfile.TemporaryDirectory(); validate the URL, check returncode, and remove every os.system / shell=True call."
+          },
+          {
+            "id": "structured_output_enforcement",
+            "name": "Structured Output Enforcement",
+            "target_artifact": "github_repo",
+            "forensic_instruction": "Scan Judge nodes in 'src/nodes/judges.py'. Verify that LLMs are invoked using '.with_structured_output()' or '.bind_tools()' bound to the Pydantic 'JudicialOpinion' schema. Check that the output includes 'score' (int), 'argument' (str), and 'cited_evidence' (list). Verify there is retry logic or error handling if a Judge returns freeform text instead of structured JSON. Capture the code block responsible for querying the Judge LLMs.",
+            "success_pattern": "All Judge LLM calls use '.with_structured_output(JudicialOpinion)' or equivalent. Retry logic exists for malformed outputs. Output is validated against the Pydantic schema before being added to state.",
+            "failure_pattern": "Judge nodes call LLMs with plain prompts and parse freeform text responses. No Pydantic validation on output. No retry on parse failure.",
+            "judicial_logic": {
+              "prosecutor": "If Judge nodes return freeform text and lack Pydantic validation for structured JSON output, charge with 'Hallucination Liability'. Score max 2.",
+              "defense": "Credit partial enforcement (e.g. JSON-mode plus manual Pydantic validation) as intent toward structured output.",
+              "tech_lead": "Verify .with_structured_output(JudicialOpinion) or .bind_tools([JudicialOpinion]) and a retry loop that rejects free text before it reaches state."
+            },
+            "remediation": "In src/nodes/judges.py: query each judge with llm.with_structured_output(JudicialOpinion) and wrap the call in a bounded retry loop that re-prompts on validation errors instead of accepting free text."
+          },
+          {
+            "id": "judicial_nuance",
+            "name": "Judicial Nuance and Dialectics",
+            "target_artifact": "github_repo",
+            "forensic_instruction": "Scan 'src/nodes/judges.py' or prompt templates. Verify that Prosecutor, Defense, and Tech Lead personas have distinct, conflicting system prompts. Compare the three prompts -- if they share more than 50% of text, flag as 'Persona Collusion'. Check if the Prosecutor prompt includes adversarial language and instructions to look for gaps, security flaws, and laziness. Check if the Defense prompt includes instructions to reward effort, intent, and creative workarounds. Check if the Tech Lead prompt focuses on architectural soundness, maintainability, and practical viability. Verify the graph forces all three judges to run in parallel on the same evidence for each criterion.",
+            "success_pattern": "Three clearly distinct personas with conflicting philosophies. Prompts actively instruct the model to be adversarial (Prosecutor), forgiving (Defense), or pragmatic (Tech Lead). Judges produce genuinely different scores and arguments for the same evidence.",
+            "failure_pattern": "Single agent acts as 'The Grader' with no persona separation. Or three judges exist but share 90% of prompt text, producing near-identical outputs. Scores are random or purely praise/criticism without nuance.",
+            "judicial_logic": {
+              "prosecutor": "If the three judges share 90% of the same prompt text, charge with 'Persona Collusion'. Score max 2. If outputs are free text, charge with 'Hallucination Liability'.",
+              "defense": "Look for specific prompt instructions that force the model to be 'contrarian' or 'forgiving'.",
+              "tech_lead": "Evaluate if the judges successfully map their opinions back to specific rubric criteria IDs and receive per-criterion judicial_logic from the rubric."
+            },
+            "remediation": "In src/nodes/judges.py: give Prosecutor, Defense and TechLead separate system prompts with conflicting philosophies (keep pairwise overlap well under 50%) and inject each dimension's judicial_logic for that persona."
+          },
+          {
+            "id": "chief_justice_synthesis",
+            "name": "Chief Justice Synthesis Engine",
+            "target_artifact": "github_repo",
+            "forensic_instruction": "Scan 'src/nodes/justice.py' for the ChiefJusticeNode implementation. Verify the conflict resolution uses hardcoded deterministic Python logic, not just an LLM prompt. Check for these specific rules: (1) Rule of Security -- if the Prosecutor identifies a confirmed security vulnerability, the score is capped at 3 regardless of Defense arguments. (2) Rule of Evidence -- if the Defense claims 'Deep Metacognition' but Detective evidence shows the artifact is missing, the Defense is overruled. (3) Rule of Functionality -- if the Tech Lead confirms the architecture is modular, this carries the highest weight for the Architecture criterion. Check if score variance > 2 triggers a specific re-evaluation rule. Verify the output is a structured Markdown report, not a console print.",
+            "success_pattern": "Deterministic Python if/else logic implementing named rules (security override, fact supremacy, functionality weight). Score variance triggers specific re-evaluation. Output is a Markdown file with Executive Summary, Criterion Breakdown (with dissent), and Remediation Plan.",
+            "failure_pattern": "ChiefJustice is just another LLM prompt that averages the three judge scores. No hardcoded rules. No dissent summary. Output is console text or unstructured.",
+            "judicial_logic": {
+              "prosecutor": "If the Chief Justice is just an LLM prompt or an average of the three scores, charge with 'Synthesis Abdication'. Score max 2.",
+              "defense": "If synthesis is an LLM prompt but the Judge personas are highly distinct and actively disagree, request partial credit (Score 3 or 4): 'Role Separation was successful, yielding true dialectical tension.'",
+              "tech_lead": "Verify named deterministic rules (security override, fact supremacy, functionality weight, variance re-evaluation) and a Markdown report with Executive Summary -> Criterion Breakdown -> Remediation Plan."
+            },
+            "remediation": "In src/nodes/justice.py: replace averaging / LLM synthesis with named deterministic rules (security cap at 3, fact supremacy, functionality weight, variance > 2 re-evaluation) and write a Markdown file with Executive Summary -> Criterion Breakdown -> Remediation Plan."
+          },
+          {
+            "id": "theoretical_depth",
+            "name": "Theoretical Depth (Documentation)",
+            "target_artifact": "pdf_report",
+            "forensic_instruction": "Search the PDF report for these specific terms: 'Dialectical Synthesis', 'Fan-In / Fan-Out', 'Metacognition', 'State Synchronization'. Determine if the term appears in a substantive architectural explanation or is just a buzzword dropped in the executive summary. Check if the report explains HOW the architecture executes these concepts, not just that they exist. Flag terms that appear without supporting explanation as 'Keyword Dropping'.",
+            "success_pattern": "Terms appear in detailed architectural explanations. The report explains how Dialectical Synthesis is implemented via three parallel judge personas. Fan-In/Fan-Out is tied to specific graph edges. Metacognition is connected to the system evaluating its own evaluation quality.",
+            "failure_pattern": "Terms appear only in the executive summary or introduction. No connection to actual implementation. 'We used Dialectical Synthesis' with no explanation of how.",
+            "judicial_logic": {
+              "prosecutor": "If concepts appear only in the executive summary or without implementation detail, charge with 'Keyword Dropping'. Score max 2.",
+              "defense": "Identify sections where the trainee demonstrates deep alignment with Multi-Agent System theories.",
+              "tech_lead": "Verify if the architectural notes provide enough detail for a third party to recreate the swarm."
+            },
+            "remediation": "In the PDF report: explain how Dialectical Synthesis, Fan-In/Fan-Out, Metacognition and State Synchronization are executed, tying each to concrete nodes, edges and reducers rather than mentioning them only in the summary."
+          },
+          {
+            "id": "report_accuracy",
+            "name": "Report Accuracy (Cross-Reference)",
+            "target_artifact": "pdf_report",
+            "forensic_instruction": "Extract all file paths mentioned in the PDF report (e.g., 'We isolated the AST logic in src/tools/ast_parser.py', 'We implemented parallel Judges in src/nodes/judges.py'). Cross-reference each claimed file path against the evidence collected by the RepoInvestigator. Build two lists: (1) Verified Paths -- files that the report mentions and actually exist in the repo. (2) Hallucinated Paths -- files the report claims exist but the RepoInvestigator found no evidence of. Flag any claims about features (e.g., 'We implemented parallel Judges') where the code evidence contradicts the claim.",
+            "success_pattern": "All file paths mentioned in the report exist in the repo. Feature claims match code evidence. Zero hallucinated paths.",
+            "failure_pattern": "Report references files that do not exist. Claims parallel execution but code shows linear flow. Multiple hallucinated paths detected.",
+            "judicial_logic": {
+              "prosecutor": "If the report claims files or features that are not present in the code, charge with 'Auditor Hallucination'. Score 1.",
+              "defense": "Distinguish forward-looking plans (clearly marked as planned) from false claims of existing work.",
+              "tech_lead": "Every cited path must resolve in the repo manifest and every feature claim must match the code detective's evidence."
+            },
+            "remediation": "In the PDF report: remove or correct every cited path that does not exist in the repository, and only claim features the code actually implements."
+          },
+          {
+            "id": "swarm_visual",
+            "name": "Architectural Diagram Analysis",
+            "target_artifact": "pdf_images",
+            "forensic_instruction": "Extract images from the PDF report. Classify each diagram: is it an accurate LangGraph State Machine diagram, a sequence diagram, or just generic flowchart boxes? Check if the diagram explicitly visualizes the parallel split: START -> [Detectives in parallel] -> Evidence Aggregation -> [Prosecutor || Defense || TechLead in parallel] -> Chief Justice Synthesis -> END. Verify the diagram distinguishes between parallel branches and sequential steps. Flag diagrams that show a simple linear pipeline as 'Misleading Architecture Visual'.",
+            "success_pattern": "Diagram accurately represents the StateGraph with clear parallel branches for both Detectives and Judges. Fan-out and fan-in points are visually distinct. Flow matches the actual code architecture.",
+            "failure_pattern": "Generic box-and-arrow diagram with no indication of parallelism. Or no diagram present at all. Diagram shows linear flow that contradicts the parallel architecture claimed in the report.",
+            "judicial_logic": {
+              "prosecutor": "If the diagram shows a linear pipeline while the report claims parallelism, charge with 'Misleading Architecture Visual'. Score max 2.",
+              "defense": "Credit text/mermaid diagrams that accurately encode the fan-out/fan-in structure even if not rendered as images.",
+              "tech_lead": "The diagram must match the compiled graph: both parallel stages, the aggregation node, and the conditional error route."
+            },
+            "remediation": "In the PDF report: include a diagram that shows START -> [Detectives in parallel] -> EvidenceAggregator -> [Prosecutor || Defense || TechLead] -> ChiefJustice -> END, matching src/graph.py."
+          }
+        ],
+        "synthesis_rules": {
+          "security_override": "Confirmed security flaws (e.g., shell injection in git tools, raw os.system with unsanitized inputs) cap the total score at 3, overriding any effort points from the Defense.",
+          "fact_supremacy": "Forensic evidence (facts from Detectives) always overrules Judicial opinion (interpretation from Judges). If the Defense claims 'Deep Metacognition' but the RepoInvestigator found no supporting code, the Defense is overruled for hallucination.",
+          "functionality_weight": "If the Tech Lead confirms the architecture is modular and workable, this carries the highest weight for the 'Graph Orchestration Architecture' criterion.",
+          "dissent_requirement": "The Chief Justice must summarize why the Prosecutor and Defense disagreed in the final report. Every criterion with a score variance > 2 must include an explicit dissent explanation.",
+          "variance_re_evaluation": "If score variance across the three judges exceeds 2 for any criterion (e.g., Prosecutor says 1, Defense says 5), trigger a re-evaluation of the specific evidence cited by each judge before rendering the final score.",
+          "statute_caps": "Orchestration Fraud (purely linear graph) caps graph_orchestration at 1. Hallucination Liability (judges without structured output) and Persona Collusion cap judicial_nuance at 2."
+        },
+        "errors": []
+      }
+    },
+    {
+      "timestamp": "2026-11-19T13:30:39.077619+00:00",
+      "node": "DocAnalyst",
+      "update": {
+        "evidences": {
+          "pdf_report": [
+            {
+              "goal": "theoretical_depth",
+              "found": false,
+              "content": "[Dialectical Synthesis @ section '4. Judicial Layer (Built Ahead of Schedule)'] The final report will expand on the dialectical reasoning behind persona design and the specific conflict-resolution logic in `ChiefJusticeNode`.\n[Fan-In / Fan-Out @ section '2. Planned StateGraph Flow (Detective Fan-Out / Fan-In)'] This mirrors the structure actually wired in `src/graph.py::build_auditor_graph()`: two distinct parallel fan-out/fan-in stages (Detectives \u2192 Aggregator, Judges \u2192 ChiefJustice) joined by a single conditional edge (`check_evidence_health`) that routes straight to `ChiefJustice` if evidence collection",
+              "location": "reports/interim_report.md",
+              "rationale": "2/4 concepts explained in architectural context (Dialectical Synthesis, Fan-In / Fan-Out); report ingested as 12 chunks.",
+              "confidence": 0.85,
+              "gaps": [
+                "'Metacognition' is never discussed",
+                "'State Synchronization' is never discussed"
+              ]
+            }
+          ]
+        },
+        "report_claims": {
+          "source": "reports/interim_report.md",
+          "cited_paths": [
+            "Dockerfile",
+            "doc_tools.py",
+            "repo_tools.py",
+            "reports/interim_report.md",
+            "reports/interim_report.pdf",
+            "src/graph.py",
+            "src/nodes/judges.py",
+            "src/nodes/justice.py",
+            "src/state.py",
+            "src/tools/repo_tools.py",
+            "tests/test_end_to_end_graph.py",
+            "tests/test_synthesis_rules.py"
+          ],
+          "feature_claims": {
+            "structured_output": "**Structured LLM output enforcement.** `JudicialOpinion` is passed directly to `.with_structured_output(JudicialOpinion)` when querying Judge LLMs (`src/nodes/judges.py`).",
+            "state_reducers": "`AgentState.evidences` and `AgentState.opinions` use `Annotated` reducers (`operator.ior` for the evidence dict, `operator.add` for the opinions list).",
+            "parallel_detectives": "Since `RepoInvestigator`, `DocAnalyst`, and `VisionInspector` all fan out from `START` and write to `evidences` concurrently, and `Prosecutor`/`Defense`/`TechLead` all fan out from `EvidenceAggregator` and write to `opinions` concurrently, LangGraph needs a merge strategy or the last node to finish ",
+            "parallel_judges": "Since `RepoInvestigator`, `DocAnalyst`, and `VisionInspector` all fan out from `START` and write to `evidences` concurrently, and `Prosecutor`/`Defense`/`TechLead` all fan out from `EvidenceAggregator` and write to `opinions` concurrently, LangGraph needs a merge strategy or the last node to finish ",
+            "sandboxed_clone": "`clone_repo_sandboxed()` in `repo_tools.py` never touches the live working directory.",
+            "deterministic_synthesis": "Although the interim deliverable only requires the Detective layer and `EvidenceAggregator`, this repository already has `src/nodes/judges.py` (Prosecutor / Defense / TechLead with distinct system prompts and `.with_structured_output(JudicialOpinion)`) and `src/nodes/justice.py` (`ChiefJusticeNode` "
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "timestamp": "2026-11-19T13:30:39.077766+00:00",
+      "node": "VisionInspector",
+      "update": {
+        "evidences": {
+          "pdf_images": [
+            {
+              "goal": "swarm_visual",
+              "found": true,
+              "content": "0 embedded image(s) extracted\nMermaid flowchart with 14 edges: detective fan-out=True, judge fan-out=True",
+              "location": "reports/interim_report.md",
+              "rationale": "0 embedded image(s) extracted; Mermaid flowchart with 14 edges: detective fan-out=True, judge fan-out=True",
+              "confidence": 0.8,
+              "gaps": []
+            }
+          ]
+        },
+        "errors": []
+      }
+    },
+    {
+      "timestamp": "2026-11-19T13:30:39.779792+00:00",
+      "node": "RepoInvestigator",
+      "update": {
+        "evidences": {
+          "github_repo": [
+            {
+              "goal": "git_forensic_analysis",
+              "found": true,
+              "content": "Total Commits: 14\n4d3315a | 2026-07-30T10:53:57+03:00 | chore: scaffold project environment and rubric constitution\n107275d | 2026-07-30T10:54:09+03:00 | feat: define typed AgentState with Pydantic models and reducers\n75683d0 | 2026-07-30T10:54:10+03:00 | feat: add sandboxed repo forensic tools (AST parsing, git history)\nee986ff | 2026-07-30T10:54:10+03:00 | feat: add PDF ingestion, cross-reference, and vision diagram tools\n5e89817 | 2026-07-30T10:54:30+03:00 | feat: implement Detective layer nodes and EvidenceAggregator\n6f7878c | 2026-07-30T10:54:31+03:00 | feat: implement Judicial bench personas with structured output\nd9a8a17 | 2026-07-30T10:54:31+03:00 | feat: implement Chief Justice deterministic synthesis engine\n6c7de64 | 2026-07-30T10:54:43+03:00 | feat: wire complete StateGraph with double fan-out/fan-in\n7c5a0b3 | 2026-07-30T10:54:43+03:00 | test: add AST parsing, synthesis rule, and end-to-end graph tests\n906fe38 | 2026-07-30T10:54:44+03:00 | docs: add interim architecture report, Dockerfile, and peer-audit scaffolding\nec42edf | 2026-07-30T10:57:38+03:00 | fix: security-override false positive on clean safe_tool_engineering audits\n0e6ec8f | 2026-07-30T10:57:39+03:00 | chore: regenerate self-audit report against final repository state\n094768d | 2026-07-30T11:17:42+03:00 | docs: update README and audit report with accurate repository URL and scores\n0649e04 | 2026-07-30T11:40:34+03:00 | feat: add AST visitor to detect os.system calls and improve safe tool engineering analysis",
+              "location": ".git (git log --reverse)",
+              "rationale": "Found 14 commits over 0.8 hours. Progression Setup -> Tool Engineering -> Graph Orchestration is visible in commit order; 3 fix/refactor/test commit(s) show iteration after initial implementation",
+              "confidence": 1.0,
+              "gaps": []
+            },
+            {
+              "goal": "state_management_rigor",
+              "found": true,
+              "content": "class AgentState(TypedDict):\n    repo_url: str\n    pdf_path: str\n    # Loaded by ContextBuilder from rubric/week2_rubric.json (the \"Constitution\")\n    rubric_dimensions: List[Dict]\n    synthesis_rules: Dict[str, str]\n    # Reducer operator.ior ensures dictionary updates merge rather than overwrite\n    evidences: Annotated[Dict[str, List[Evidence]], operator.ior]\n    # Written only by RepoInvestigator / DocAnalyst; cross-referenced by EvidenceAggregator at fan-in\n    repo_manifest: List[str]\n    report_claims: Optional[ReportClaims]\n    # Reducer operator.add ensures parallel judge outputs accumulate into a single list\n    opinions: Annotated[List[JudicialOpinion], operator.add]\n    # Node-failure log: any node may append, so it also needs an additive reducer\n    errors: Annotated[List[str], operator.add]\n    final_report: Optional[AuditReport]\n    markdown_output: Optional[str]",
+              "location": "src/state.py",
+              "rationale": "AgentState inherits TypedDict; Evidence is a Pydantic BaseModel; 'evidences' uses reducer operator.ior; JudicialOpinion is a Pydantic BaseModel; 'opinions' uses reducer operator.add",
+              "confidence": 1.0,
+              "gaps": []
+            },
+            {
+              "goal": "graph_orchestration",
+              "found": true,
+              "content": "# Edges reconstructed from AST\n__start__ -> ContextBuilder\nContextBuilder -> RepoInvestigator\nContextBuilder -> DocAnalyst\nContextBuilder -> VisionInspector\nRepoInvestigator -> EvidenceAggregator\nDocAnalyst -> EvidenceAggregator\nVisionInspector -> EvidenceAggregator\nProsecutor -> ChiefJustice\nDefense -> ChiefJustice\nTechLead -> ChiefJustice\nEvidenceMissing -> ChiefJustice\nChiefJustice -> __end__\nEvidenceAggregator -?route_after_aggregation-> ['Defense', 'EvidenceMissing', 'Prosecutor', 'TechLead'] (parallel: [['Prosecutor', 'Defense', 'TechLead']])\n\n# Graph definition\ndef build_auditor_graph():\n    \"\"\"\n    Hierarchical StateGraph with two parallel fan-out / fan-in stages:\n\n    START -> ContextBuilder -> [RepoInvestigator || DocAnalyst || VisionInspector]\n          -> EvidenceAggregator -(conditional)-> [Prosecutor || Defense || TechLead] -> ChiefJustice -> END\n                                 \\\\-> EvidenceMissing -> ChiefJustice\n    \"\"\"\n    builder = StateGraph(AgentState)\n\n    # Layer 0: the Constitution\n    builder.add_node(\"ContextBuilder\", context_builder_node)\n\n    # Layer 1: Detectives + fan-in\n    builder.add_node(\"RepoInvestigator\", repo_investigator_node)\n    builder.add_node(\"DocAnalyst\", doc_analyst_node)\n    builder.add_node(\"VisionInspector\", vision_inspector_node)\n    builder.add_node(\"EvidenceAggregator\", evidence_aggregator_node)\n    builder.add_node(\"EvidenceMissing\", evidence_missing_node)\n\n    # Layer 2: the Dialectical Bench\n    builder.add_node(\"Prosecutor\", prosecutor_node)\n    builder.add_node(\"Defense\", defense_node)\n    builder.add_node(\"TechLead\", tech_lead_node)\n\n    # Layer 3: the Supreme Court\n    builder.add_node(\"ChiefJustice\", chief_justice_node)\n\n    builder.add_edge(START, \"ContextBuilder\")\n\n    # Detective fan-out: three unconditional edges from one node run in the same superstep\n    builder.add_edge(\"ContextBuilder\", \"RepoInvestigator\")\n    builder.add_edge(\"ContextBuilder\", \"DocAnalyst\")\n    builder.add_edge(\"ContextBuilder\", \"VisionInspector\")\n\n    # Detective fan-in: a join edge waits for ALL detectives before the aggregator runs\n    builder.add_edge([\"RepoInvestigator\", \"DocAnalyst\", \"VisionInspector\"], \"EvidenceAggregator\")\n\n    # Judge fan-out (or failure route), decided by the evidence health check\n    builder.add_conditional_edges(\n        \"EvidenceAggregator\",\n        route_after_aggregation,\n        [\"Prosecutor\", \"Defense\", \"TechLead\", \"EvidenceMissing\"],\n    )\n\n    # Judge fan-in: ChiefJustice waits for all three opinions lists\n    builder.add_edge([\"Prosecutor\", \"Defense\", \"TechLead\"], \"ChiefJustice\")\n    builder.add_edge(\"EvidenceMissing\", \"ChiefJustice\")\n\n    builder.add_edge(\"ChiefJustice\", END)\n    return builder.compile()",
+              "location": "src/graph.py",
+              "rationale": "StateGraph instantiated in src/graph.py with 10 nodes and 12 static edges; Detectives fan out in parallel from 'ContextBuilder' -> ['DocAnalyst', 'RepoInvestigator', 'VisionInspector']; 'EvidenceAggregator' synchronizes (fan-in) evidence from ['DocAnalyst', 'RepoInvestigator', 'VisionInspector']; Judges fan out in parallel from 'EvidenceAggregator' -> ['Defense', 'Prosecutor', 'TechLead']; Judges fan in to 'ChiefJustice'; Conditional edges route failures to ['EvidenceMissing']",
+              "confidence": 1.0,
+              "gaps": []
+            },
+            {
+              "goal": "safe_tool_engineering",
+              "found": true,
+              "content": "def clone_repo_sandboxed(\n    repo_url_or_path: str, timeout: int = 120\n) -> Tuple[Optional[str], Optional[tempfile.TemporaryDirectory], Optional[str]]:\n    \"\"\"\n    Clones a repository into a ``tempfile.TemporaryDirectory()`` sandbox (never the live working\n    directory). An existing local directory is analysed in place without cloning.\n\n    Hardening: URL validation, ``--`` separator before the URL, no credential prompts\n    (GIT_TERMINAL_PROMPT=0 / ssh BatchMode) so auth failures return instead of hanging,\n    symlinks checked out as plain files, full history (no ``--depth``) so the git narrative is\n    complete, and a timeout. Returns (repo_path, temp_dir_obj, error_msg); the caller must\n    ``cleanup()`` the temp dir.\n    \"\"\"\n    if os.path.isdir(repo_url_or_path):\n        return os.path.abspath(repo_url_or_path), None, None\n\n    error = validate_repo_url(repo_url_or_path)\n    if error:\n        return None, None, error\n\n    temp_dir = tempfile.TemporaryDirectory(prefix=\"auditor_sandbox_\")\n    target = os.path.join(temp_dir.name, \"repo\")\n    env = {\n        **os.environ,\n        \"GIT_TERMINAL_PROMPT\": \"0\",\n        \"GIT_SSH_COMMAND\": \"ssh -o BatchMode=yes\",\n    }\n    cmd = [\n        \"git\", \"-c\", \"core.symlinks=false\", \"-c\", \"protocol.ext.allow=never\",\n        \"clone\", \"--quiet\", \"--\", repo_url_or_path, target,\n    ]\n    try:\n        result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=env, check=False)\n    except subprocess.TimeoutExpired:\n        temp_dir.cleanup()\n        return None, None, f\"git clone timed out after {timeout}s.\"\n    except OSError as e:\n        temp_dir.cleanup()\n        return None, None, f\"git executable unavailable: {e}\"\n\n    if result.returncode != 0:\n        temp_dir.cleanup()\n        return None, None, _classify_git_error(result.stderr.strip(), result.returncode)\n    return target, temp_dir, None",
+              "location": "src/tools/repo_tools.py::clone_repo_sandboxed",
+              "rationale": "Clones are sandboxed with tempfile.TemporaryDirectory()/mkdtemp(); Clone function located at src/tools/repo_tools.py::clone_repo_sandboxed; clone checks returncode / handles exceptions; stdout/stderr captured; No os.system / shell=True calls (AST-verified)",
+              "confidence": 1.0,
+              "gaps": []
+            },
+            {
+              "goal": "structured_output_enforcement",
+              "found": true,
+              "content": "def _judge_llm():\n    \"\"\"Returns an LLM bound to the JudicialOpinion schema, or None when no API key is set.\"\"\"\n    if os.environ.get(\"OPENAI_API_KEY\"):\n        from langchain_openai import ChatOpenAI\n        llm = ChatOpenAI(model=\"gpt-4o\", temperature=0.2)\n    elif os.environ.get(\"GEMINI_API_KEY\"):\n        from langchain_google_genai import ChatGoogleGenerativeAI\n        llm = ChatGoogleGenerativeAI(model=\"gemini-2.5-flash\", temperature=0.2)\n    else:\n        return None\n    return llm.with_structured_output(JudicialOpinion)",
+              "location": "src/nodes/judges.py::_judge_llm",
+              "rationale": "Judge LLM bound to Pydantic schema via structured output (JudicialOpinion); Retry loop re-queries the judge on malformed / free-text output",
+              "confidence": 1.0,
+              "gaps": []
+            },
+            {
+              "goal": "judicial_nuance",
+              "found": true,
+              "content": "[Prosecutor] You are The Prosecutor on the Digital Courtroom Judicial Bench.\nCore Philosophy: \"Trust No One. Assume Vibe Coding.\"\nObjective: Scrutinize forensic evidence for structural flaws, security vulnerabilities, laziness, and cheating.\n\nStatutes you enforce (Protocol B):\n- Orchestration Fraud: a purely linear StateGraph (no parallel fan-out) caps LangGraph architecture at 1.\n- Hallucination Liability: judges returning freeform text without Pydantic validation caps Judicial Nuance at 2.\n- Security Negli\n\n[Defense] You are The Defense Attorney on the Digital Courtroom Judicial Bench.\nCore Philosophy: \"Reward Effort and Intent. Look for the 'Spirit of the Law'.\"\nObjective: Highlight creative workarounds, deep thought, engineering process, and iteration even if execution is imperfect.\n\nMitigations you may plead (Statute of Effort):\n- If the graph trips on framework syntax but the AST tooling shows deep code comprehension, request a boost from 1 to 3.\n- If synthesis is an LLM prompt but the personas are disti\n\n[TechLead] You are The Tech Lead on the Digital Courtroom Judicial Bench.\nCore Philosophy: \"Does it actually work? Is it maintainable?\"\nObjective: Evaluate architectural soundness, code cleanliness and practical viability. You are the pragmatic tie-breaker.\n\nPrecedents:\n- Pydantic Rigor vs. Dict Soups: plain dicts for complex nested state is Technical Debt (score 3).\n- Sandboxed Tooling: clones and parsing must use temporary directories and error handlers.\n- Reducers: operator.add / operator.ior must guard",
+              "location": "src/nodes/judges.py",
+              "rationale": "Persona prompts are distinct (pairwise word overlap: Prosecutor/Defense=12%, Prosecutor/TechLead=15%, Defense/TechLead=17%); Prosecutor prompt carries its philosophy (trust no one, harsh, scrutin); Defense prompt carries its philosophy (effort, intent, spirit); TechLead prompt carries its philosophy (maintainab, pragmatic, technical debt); Per-criterion judicial_logic from the rubric is injected into persona prompts",
+              "confidence": 1.0,
+              "gaps": []
+            },
+            {
+              "goal": "chief_justice_synthesis",
+              "found": true,
+              "content": "def chief_justice_node(state: AgentState) -> Dict:\n    \"\"\"\n    ChiefJusticeNode: applies the deterministic synthesis rules (security override, fact\n    supremacy, functionality weight, variance re-evaluation, statute caps, dissent requirement)\n    to every criterion and renders the Markdown audit report.\n    \"\"\"\n    print(\"[Supreme Court] ChiefJusticeNode synthesizing verdict & resolving dialectical conflicts...\")\n    opinions = state.get(\"opinions\", [])\n    evidences = state.get(\"evidences\", {})\n    dimensions = state.get(\"rubric_dimensions\", [])\n    rules_text = state.get(\"synthesis_rules\", {})\n    errors = state.get(\"errors\", [])\n    repo_url = state.get(\"repo_url\", \"\")\n    pdf_path = state.get(\"pdf_path\", \"\")\n\n    ev_index = _evidence_index(evidences)\n    security_hits = [g for e in ev_index.values() for g in e.gaps if \"SECURITY VIOLATION\" in g]\n    security_flaw = bool(security_hits)\n    report_missing = not pdf_path or not os.path.isfile(pdf_path)\n\n    grouped: Dict[str, List[JudicialOpinion]] = {}\n    for op in opinions:\n        grouped.setdefault(op.criterion_id, []).append(op)\n\n    results = [\n        _synthesize_criterion(dim, grouped.get(dim[\"id\"], []), ev_index.get(dim[\"id\"]), ev_index, security_flaw, report_missing)\n        for dim in dimensions\n    ]\n\n    raw_overall = round(sum(r.final_score for r in results) / len(results), 2) if results else 0.0\n    overall = raw_overall\n    if security_flaw and overall > SECURITY_CAP:\n        overall = float(SECURITY_CAP)\n\n    report = _render(repo_url, pdf_path, results, ev_index, overall, raw_overall, security_hits, rules_text, errors)\n    return {\"final_report\": report[0], \"markdown_output\": report[1]}",
+              "location": "src/nodes/justice.py::chief_justice_node",
+              "rationale": "31 deterministic if-branches in src/nodes/justice.py; Rule of Security (cap at 3) implemented; Rule of Evidence / Fact Supremacy implemented; Rule of Functionality (Tech Lead weight) implemented; Variance > 2 re-evaluation implemented; Dissent summary implemented; Emits Markdown with Executive Summary and Remediation Plan sections",
+              "confidence": 1.0,
+              "gaps": []
+            }
+          ]
+        },
+        "repo_manifest": [
+          ".env.example",
+          ".gitignore",
+          "Dockerfile",
+          "README.md",
+          "audit/report_bypeer_received/README.md",
+          "audit/report_onpeer_generated/README.md",
+          "audit/report_onself_generated/audit_report.md",
+          "main.py",
+          "pyproject.toml",
+          "reports/interim_report.md",
+          "rubric/week2_rubric.json",
+          "src/__init__.py",
+          "src/graph.py",
+          "src/nodes/__init__.py",
+          "src/nodes/detectives.py",
+          "src/nodes/judges.py",
+          "src/nodes/justice.py",
+          "src/rubric.py",
+          "src/state.py",
+          "src/tools/doc_tools.py",
+          "src/tools/repo_tools.py",
+          "tests/__init__.py",
+          "tests/conftest.py",
+          "tests/test_ast_parsing.py",
+          "tests/test_doc_tools.py",
+          "tests/test_end_to_end_graph.py",
+          "tests/test_git_history.py",
+          "tests/test_graph_structure.py",
+          "tests/test_judges.py",
+          "tests/test_synthesis_rules.py",
+          "uv.lock"
+        ],
+        "errors": []
+      }
+    },
+    {
+      "timestamp": "2026-11-19T13:30:39.783667+00:00",
+      "node": "EvidenceAggregator",
+      "update": {
+        "evidences": {
+          "cross_reference": [
+            {
+              "goal": "report_accuracy",
+              "found": false,
+              "content": "Verified Paths (11): Dockerfile, doc_tools.py -> src/tools/doc_tools.py, repo_tools.py -> src/tools/repo_tools.py, reports/interim_report.md, src/graph.py, src/nodes/judges.py, src/nodes/justice.py, src/state.py, src/tools/repo_tools.py, tests/test_end_to_end_graph.py, tests/test_synthesis_rules.py\nHallucinated Paths (1): reports/interim_report.pdf\nFeature claims checked (6): structured_output, state_reducers, parallel_detectives, parallel_judges, sandboxed_clone, deterministic_synthesis; contradicted: 0",
+              "location": "reports/interim_report.md",
+              "rationale": "Cross-referenced 12 cited paths against 31 repository files: 11 verified, 1 hallucinated; 6/6 feature claims match code evidence.",
+              "confidence": 1.0,
+              "gaps": [
+                "HALLUCINATED PATH: reports/interim_report.pdf"
+              ]
+            }
+          ]
+        },
+        "errors": []
+      }
+    },
+    {
+      "timestamp": "2026-11-19T13:30:39.790273+00:00",
+      "node": "Defense",
+      "update": {
+        "opinions": [
+          {
+            "judge": "Defense",
+            "criterion_id": "git_forensic_analysis",
+            "score": 5,
+            "argument": "DEFENSE on 'Git Forensic Analysis': the record shows real engineering: Found 14 commits over 0.8 hours. Progression Setup -> Tool Engineering -> Graph Orchestration is visible in commit order; 3 fix/refactor/test commit(s) show iteration after initial implementation.",
+            "cited_evidence": [
+              ".git (git log --reverse)"
+            ]
+          },
+          {
+            "judge": "Defense",
+            "criterion_id": "state_management_rigor",
+            "score": 5,
+            "argument": "DEFENSE on 'State Management Rigor': the record shows real engineering: AgentState inherits TypedDict; Evidence is a Pydantic BaseModel; 'evidences' uses reducer operator.ior.",
+            "cited_evidence": [
+              "src/state.py"
+            ]
+          },
+          {
+            "judge": "Defense",
+            "criterion_id": "graph_orchestration",
+            "score": 5,
+            "argument": "DEFENSE on 'Graph Orchestration Architecture': the record shows real engineering: StateGraph instantiated in src/graph.py with 10 nodes and 12 static edges; Detectives fan out in parallel from 'ContextBuilder' -> ['DocAnalyst', 'RepoInvestigator', 'VisionInspector']; 'EvidenceAggregator' synchronizes (fan-in) evidence from ['DocAnalyst', 'RepoInvestigator', 'VisionInspector'].",
+            "cited_evidence": [
+              "src/graph.py"
+            ]
+          },
+          {
+            "judge": "Defense",
+            "criterion_id": "safe_tool_engineering",
+            "score": 5,
+            "argument": "DEFENSE on 'Safe Tool Engineering': the record shows real engineering: Clones are sandboxed with tempfile.TemporaryDirectory()/mkdtemp(); Clone function located at src/tools/repo_tools.py::clone_repo_sandboxed; clone checks returncode / handles exceptions.",
+            "cited_evidence": [
+              "src/tools/repo_tools.py::clone_repo_sandboxed"
+            ]
+          },
+          {
+            "judge": "Defense",
+            "criterion_id": "structured_output_enforcement",
+            "score": 5,
+            "argument": "DEFENSE on 'Structured Output Enforcement': the record shows real engineering: Judge LLM bound to Pydantic schema via structured output (JudicialOpinion); Retry loop re-queries the judge on malformed / free-text output.",
+            "cited_evidence": [
+              "src/nodes/judges.py::_judge_llm"
+            ]
+          },
+          {
+            "judge": "Defense",
+            "criterion_id": "judicial_nuance",
+            "score": 5,
+            "argument": "DEFENSE on 'Judicial Nuance and Dialectics': the record shows real engineering: Persona prompts are distinct (pairwise word overlap: Prosecutor/Defense=12%, Prosecutor/TechLead=15%, Defense/TechLead=17%); Prosecutor prompt carries its philosophy (trust no one, harsh, scrutin); Defense prompt carries its philosophy (effort, intent, spirit).",
+            "cited_evidence": [
+              "src/nodes/judges.py"
+            ]
+          },
+          {
+            "judge": "Defense",
+            "criterion_id": "chief_justice_synthesis",
+            "score": 5,
+            "argument": "DEFENSE on 'Chief Justice Synthesis Engine': the record shows real engineering: 31 deterministic if-branches in src/nodes/justice.py; Rule of Security (cap at 3) implemented; Rule of Evidence / Fact Supremacy implemented.",
+            "cited_evidence": [
+              "src/nodes/justice.py::chief_justice_node"
+            ]
+          },
+          {
+            "judge": "Defense",
+            "criterion_id": "theoretical_depth",
+            "score": 3,
+            "argument": "DEFENSE on 'Theoretical Depth (Documentation)': the record shows real engineering: 2/4 concepts explained in architectural context (Dialectical Synthesis, Fan-In / Fan-Out); report ingested as 12 chunks..",
+            "cited_evidence": [
+              "reports/interim_report.md"
+            ]
+          },
+          {
+            "judge": "Defense",
+            "criterion_id": "report_accuracy",
+            "score": 3,
+            "argument": "DEFENSE on 'Report Accuracy (Cross-Reference)': the record shows real engineering: Cross-referenced 12 cited paths against 31 repository files: 11 verified, 1 hallucinated; 6/6 feature claims match code evidence..",
+            "cited_evidence": [
+              "reports/interim_report.md"
+            ]
+          },
+          {
+            "judge": "Defense",
+            "criterion_id": "swarm_visual",
+            "score": 5,
+            "argument": "DEFENSE on 'Architectural Diagram Analysis': the record shows real engineering: 0 embedded image(s) extracted; Mermaid flowchart with 14 edges: detective fan-out=True, judge fan-out=True.",
+            "cited_evidence": [
+              "reports/interim_report.md"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-11-19T13:30:39.790344+00:00",
+      "node": "Prosecutor",
+      "update": {
+        "opinions": [
+          {
+            "judge": "Prosecutor",
+            "criterion_id": "git_forensic_analysis",
+            "score": 5,
+            "argument": "PROSECUTION on 'Git Forensic Analysis': I searched for bypassed structure and found no verified defect; the evidence stands.",
+            "cited_evidence": [
+              ".git (git log --reverse)"
+            ]
+          },
+          {
+            "judge": "Prosecutor",
+            "criterion_id": "state_management_rigor",
+            "score": 5,
+            "argument": "PROSECUTION on 'State Management Rigor': I searched for bypassed structure and found no verified defect; the evidence stands.",
+            "cited_evidence": [
+              "src/state.py"
+            ]
+          },
+          {
+            "judge": "Prosecutor",
+            "criterion_id": "graph_orchestration",
+            "score": 5,
+            "argument": "PROSECUTION on 'Graph Orchestration Architecture': I searched for bypassed structure and found no verified defect; the evidence stands.",
+            "cited_evidence": [
+              "src/graph.py"
+            ]
+          },
+          {
+            "judge": "Prosecutor",
+            "criterion_id": "safe_tool_engineering",
+            "score": 5,
+            "argument": "PROSECUTION on 'Safe Tool Engineering': I searched for bypassed structure and found no verified defect; the evidence stands.",
+            "cited_evidence": [
+              "src/tools/repo_tools.py::clone_repo_sandboxed"
+            ]
+          },
+          {
+            "judge": "Prosecutor",
+            "criterion_id": "structured_output_enforcement",
+            "score": 5,
+            "argument": "PROSECUTION on 'Structured Output Enforcement': I searched for bypassed structure and found no verified defect; the evidence stands.",
+            "cited_evidence": [
+              "src/nodes/judges.py::_judge_llm"
+            ]
+          },
+          {
+            "judge": "Prosecutor",
+            "criterion_id": "judicial_nuance",
+            "score": 5,
+            "argument": "PROSECUTION on 'Judicial Nuance and Dialectics': I searched for bypassed structure and found no verified defect; the evidence stands.",
+            "cited_evidence": [
+              "src/nodes/judges.py"
+            ]
+          },
+          {
+            "judge": "Prosecutor",
+            "criterion_id": "chief_justice_synthesis",
+            "score": 5,
+            "argument": "PROSECUTION on 'Chief Justice Synthesis Engine': I searched for bypassed structure and found no verified defect; the evidence stands.",
+            "cited_evidence": [
+              "src/nodes/justice.py::chief_justice_node"
+            ]
+          },
+          {
+            "judge": "Prosecutor",
+            "criterion_id": "theoretical_depth",
+            "score": 1,
+            "argument": "PROSECUTION on 'Theoretical Depth (Documentation)': the detective verified these defects: 'Metacognition' is never discussed; 'State Synchronization' is never discussed.",
+            "cited_evidence": [
+              "reports/interim_report.md",
+              "'Metacognition' is never discussed",
+              "'State Synchronization' is never discussed"
+            ]
+          },
+          {
+            "judge": "Prosecutor",
+            "criterion_id": "report_accuracy",
+            "score": 1,
+            "argument": "PROSECUTION [Auditor Hallucination] on 'Report Accuracy (Cross-Reference)': the detective verified these defects: HALLUCINATED PATH: reports/interim_report.pdf.",
+            "cited_evidence": [
+              "reports/interim_report.md",
+              "HALLUCINATED PATH: reports/interim_report.pdf"
+            ]
+          },
+          {
+            "judge": "Prosecutor",
+            "criterion_id": "swarm_visual",
+            "score": 4,
+            "argument": "PROSECUTION on 'Architectural Diagram Analysis': I searched for bypassed structure and found no verified defect; the evidence stands.",
+            "cited_evidence": [
+              "reports/interim_report.md"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-11-19T13:30:39.790377+00:00",
+      "node": "TechLead",
+      "update": {
+        "opinions": [
+          {
+            "judge": "TechLead",
+            "criterion_id": "git_forensic_analysis",
+            "score": 5,
+            "argument": "TECH LEAD on 'Git Forensic Analysis': artifacts are sound and maintainable as built.",
+            "cited_evidence": [
+              ".git (git log --reverse)"
+            ]
+          },
+          {
+            "judge": "TechLead",
+            "criterion_id": "state_management_rigor",
+            "score": 5,
+            "argument": "TECH LEAD on 'State Management Rigor': artifacts are sound and maintainable as built.",
+            "cited_evidence": [
+              "src/state.py"
+            ]
+          },
+          {
+            "judge": "TechLead",
+            "criterion_id": "graph_orchestration",
+            "score": 5,
+            "argument": "TECH LEAD on 'Graph Orchestration Architecture': artifacts are sound and maintainable as built.",
+            "cited_evidence": [
+              "src/graph.py"
+            ]
+          },
+          {
+            "judge": "TechLead",
+            "criterion_id": "safe_tool_engineering",
+            "score": 5,
+            "argument": "TECH LEAD on 'Safe Tool Engineering': artifacts are sound and maintainable as built.",
+            "cited_evidence": [
+              "src/tools/repo_tools.py::clone_repo_sandboxed"
+            ]
+          },
+          {
+            "judge": "TechLead",
+            "criterion_id": "structured_output_enforcement",
+            "score": 5,
+            "argument": "TECH LEAD on 'Structured Output Enforcement': artifacts are sound and maintainable as built.",
+            "cited_evidence": [
+              "src/nodes/judges.py::_judge_llm"
+            ]
+          },
+          {
+            "judge": "TechLead",
+            "criterion_id": "judicial_nuance",
+            "score": 5,
+            "argument": "TECH LEAD on 'Judicial Nuance and Dialectics': artifacts are sound and maintainable as built.",
+            "cited_evidence": [
+              "src/nodes/judges.py"
+            ]
+          },
+          {
+            "judge": "TechLead",
+            "criterion_id": "chief_justice_synthesis",
+            "score": 5,
+            "argument": "TECH LEAD on 'Chief Justice Synthesis Engine': artifacts are sound and maintainable as built.",
+            "cited_evidence": [
+              "src/nodes/justice.py::chief_justice_node"
+            ]
+          },
+          {
+            "judge": "TechLead",
+            "criterion_id": "theoretical_depth",
+            "score": 3,
+            "argument": "TECH LEAD on 'Theoretical Depth (Documentation)': technical debt: 'Metacognition' is never discussed; 'State Synchronization' is never discussed. Remediation: In the PDF report: explain how Dialectical Synthesis, Fan-In/Fan-Out, Metacognition and State Synchronization are executed, tying each to concrete nodes, edges and reducers rather than mentioning them only in the summary.",
+            "cited_evidence": [
+              "reports/interim_report.md"
+            ]
+          },
+          {
+            "judge": "TechLead",
+            "criterion_id": "report_accuracy",
+            "score": 3,
+            "argument": "TECH LEAD on 'Report Accuracy (Cross-Reference)': technical debt: HALLUCINATED PATH: reports/interim_report.pdf. Remediation: In the PDF report: remove or correct every cited path that does not exist in the repository, and only claim features the code actually implements.",
+            "cited_evidence": [
+              "reports/interim_report.md"
+            ]
+          },
+          {
+            "judge": "TechLead",
+            "criterion_id": "swarm_visual",
+            "score": 5,
+            "argument": "TECH LEAD on 'Architectural Diagram Analysis': artifacts are sound and maintainable as built.",
+            "cited_evidence": [
+              "reports/interim_report.md"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-11-19T13:30:39.794620+00:00",
+      "node": "ChiefJustice",
+      "update": {
+        "final_report": {
+          "repo_url": "https://github.com/kidus888/automaton-auditor.git (local working tree)",
+          "executive_summary": "Overall verdict: 4.4/5.0 (Competent Orchestrator) across 10 rubric criteria. For every criterion the Prosecutor, Defense and Tech Lead judged the same detective evidence in parallel; the Chief Justice then resolved their disagreement with deterministic rules rather than an average. 0 criterion/criteria showed a score spread above 2 and were re-evaluated against the evidence; the Defense was overruled 0 time(s) and the Prosecutor 0 time(s). Strongest: Git Forensic Analysis, State Management Rigor, Graph Orchestration Architecture. Highest-priority remediation: Theoretical Depth (Documentation) (2/5), Report Accuracy (Cross-Reference) (2/5).",
+          "overall_score": 4.4,
+          "criteria": [
+            {
+              "dimension_id": "git_forensic_analysis",
+              "dimension_name": "Git Forensic Analysis",
+              "final_score": 5,
+              "judge_opinions": [
+                {
+                  "judge": "Defense",
+                  "criterion_id": "git_forensic_analysis",
+                  "score": 5,
+                  "argument": "DEFENSE on 'Git Forensic Analysis': the record shows real engineering: Found 14 commits over 0.8 hours. Progression Setup -> Tool Engineering -> Graph Orchestration is visible in commit order; 3 fix/refactor/test commit(s) show iteration after initial implementation.",
+                  "cited_evidence": [
+                    ".git (git log --reverse)"
+                  ]
+                },
+                {
+                  "judge": "Prosecutor",
+                  "criterion_id": "git_forensic_analysis",
+                  "score": 5,
+                  "argument": "PROSECUTION on 'Git Forensic Analysis': I searched for bypassed structure and found no verified defect; the evidence stands.",
+                  "cited_evidence": [
+                    ".git (git log --reverse)"
+                  ]
+                },
+                {
+                  "judge": "TechLead",
+                  "criterion_id": "git_forensic_analysis",
+                  "score": 5,
+                  "argument": "TECH LEAD on 'Git Forensic Analysis': artifacts are sound and maintainable as built.",
+                  "cited_evidence": [
+                    ".git (git log --reverse)"
+                  ]
+                }
+              ],
+              "rules_applied": [],
+              "overruled_judges": [],
+              "dissent_summary": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+              "remediation": "No remediation required."
+            },
+            {
+              "dimension_id": "state_management_rigor",
+              "dimension_name": "State Management Rigor",
+              "final_score": 5,
+              "judge_opinions": [
+                {
+                  "judge": "Defense",
+                  "criterion_id": "state_management_rigor",
+                  "score": 5,
+                  "argument": "DEFENSE on 'State Management Rigor': the record shows real engineering: AgentState inherits TypedDict; Evidence is a Pydantic BaseModel; 'evidences' uses reducer operator.ior.",
+                  "cited_evidence": [
+                    "src/state.py"
+                  ]
+                },
+                {
+                  "judge": "Prosecutor",
+                  "criterion_id": "state_management_rigor",
+                  "score": 5,
+                  "argument": "PROSECUTION on 'State Management Rigor': I searched for bypassed structure and found no verified defect; the evidence stands.",
+                  "cited_evidence": [
+                    "src/state.py"
+                  ]
+                },
+                {
+                  "judge": "TechLead",
+                  "criterion_id": "state_management_rigor",
+                  "score": 5,
+                  "argument": "TECH LEAD on 'State Management Rigor': artifacts are sound and maintainable as built.",
+                  "cited_evidence": [
+                    "src/state.py"
+                  ]
+                }
+              ],
+              "rules_applied": [],
+              "overruled_judges": [],
+              "dissent_summary": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+              "remediation": "No remediation required."
+            },
+            {
+              "dimension_id": "graph_orchestration",
+              "dimension_name": "Graph Orchestration Architecture",
+              "final_score": 5,
+              "judge_opinions": [
+                {
+                  "judge": "Defense",
+                  "criterion_id": "graph_orchestration",
+                  "score": 5,
+                  "argument": "DEFENSE on 'Graph Orchestration Architecture': the record shows real engineering: StateGraph instantiated in src/graph.py with 10 nodes and 12 static edges; Detectives fan out in parallel from 'ContextBuilder' -> ['DocAnalyst', 'RepoInvestigator', 'VisionInspector']; 'EvidenceAggregator' synchronizes (fan-in) evidence from ['DocAnalyst', 'RepoInvestigator', 'VisionInspector'].",
+                  "cited_evidence": [
+                    "src/graph.py"
+                  ]
+                },
+                {
+                  "judge": "Prosecutor",
+                  "criterion_id": "graph_orchestration",
+                  "score": 5,
+                  "argument": "PROSECUTION on 'Graph Orchestration Architecture': I searched for bypassed structure and found no verified defect; the evidence stands.",
+                  "cited_evidence": [
+                    "src/graph.py"
+                  ]
+                },
+                {
+                  "judge": "TechLead",
+                  "criterion_id": "graph_orchestration",
+                  "score": 5,
+                  "argument": "TECH LEAD on 'Graph Orchestration Architecture': artifacts are sound and maintainable as built.",
+                  "cited_evidence": [
+                    "src/graph.py"
+                  ]
+                }
+              ],
+              "rules_applied": [
+                "RULE OF FUNCTIONALITY: Tech Lead confirmed a modular, workable architecture; carries highest weight"
+              ],
+              "overruled_judges": [],
+              "dissent_summary": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+              "remediation": "No remediation required."
+            },
+            {
+              "dimension_id": "safe_tool_engineering",
+              "dimension_name": "Safe Tool Engineering",
+              "final_score": 5,
+              "judge_opinions": [
+                {
+                  "judge": "Defense",
+                  "criterion_id": "safe_tool_engineering",
+                  "score": 5,
+                  "argument": "DEFENSE on 'Safe Tool Engineering': the record shows real engineering: Clones are sandboxed with tempfile.TemporaryDirectory()/mkdtemp(); Clone function located at src/tools/repo_tools.py::clone_repo_sandboxed; clone checks returncode / handles exceptions.",
+                  "cited_evidence": [
+                    "src/tools/repo_tools.py::clone_repo_sandboxed"
+                  ]
+                },
+                {
+                  "judge": "Prosecutor",
+                  "criterion_id": "safe_tool_engineering",
+                  "score": 5,
+                  "argument": "PROSECUTION on 'Safe Tool Engineering': I searched for bypassed structure and found no verified defect; the evidence stands.",
+                  "cited_evidence": [
+                    "src/tools/repo_tools.py::clone_repo_sandboxed"
+                  ]
+                },
+                {
+                  "judge": "TechLead",
+                  "criterion_id": "safe_tool_engineering",
+                  "score": 5,
+                  "argument": "TECH LEAD on 'Safe Tool Engineering': artifacts are sound and maintainable as built.",
+                  "cited_evidence": [
+                    "src/tools/repo_tools.py::clone_repo_sandboxed"
+                  ]
+                }
+              ],
+              "rules_applied": [],
+              "overruled_judges": [],
+              "dissent_summary": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+              "remediation": "No remediation required."
+            },
+            {
+              "dimension_id": "structured_output_enforcement",
+              "dimension_name": "Structured Output Enforcement",
+              "final_score": 5,
+              "judge_opinions": [
+                {
+                  "judge": "Defense",
+                  "criterion_id": "structured_output_enforcement",
+                  "score": 5,
+                  "argument": "DEFENSE on 'Structured Output Enforcement': the record shows real engineering: Judge LLM bound to Pydantic schema via structured output (JudicialOpinion); Retry loop re-queries the judge on malformed / free-text output.",
+                  "cited_evidence": [
+                    "src/nodes/judges.py::_judge_llm"
+                  ]
+                },
+                {
+                  "judge": "Prosecutor",
+                  "criterion_id": "structured_output_enforcement",
+                  "score": 5,
+                  "argument": "PROSECUTION on 'Structured Output Enforcement': I searched for bypassed structure and found no verified defect; the evidence stands.",
+                  "cited_evidence": [
+                    "src/nodes/judges.py::_judge_llm"
+                  ]
+                },
+                {
+                  "judge": "TechLead",
+                  "criterion_id": "structured_output_enforcement",
+                  "score": 5,
+                  "argument": "TECH LEAD on 'Structured Output Enforcement': artifacts are sound and maintainable as built.",
+                  "cited_evidence": [
+                    "src/nodes/judges.py::_judge_llm"
+                  ]
+                }
+              ],
+              "rules_applied": [],
+              "overruled_judges": [],
+              "dissent_summary": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+              "remediation": "No remediation required."
+            },
+            {
+              "dimension_id": "judicial_nuance",
+              "dimension_name": "Judicial Nuance and Dialectics",
+              "final_score": 5,
+              "judge_opinions": [
+                {
+                  "judge": "Defense",
+                  "criterion_id": "judicial_nuance",
+                  "score": 5,
+                  "argument": "DEFENSE on 'Judicial Nuance and Dialectics': the record shows real engineering: Persona prompts are distinct (pairwise word overlap: Prosecutor/Defense=12%, Prosecutor/TechLead=15%, Defense/TechLead=17%); Prosecutor prompt carries its philosophy (trust no one, harsh, scrutin); Defense prompt carries its philosophy (effort, intent, spirit).",
+                  "cited_evidence": [
+                    "src/nodes/judges.py"
+                  ]
+                },
+                {
+                  "judge": "Prosecutor",
+                  "criterion_id": "judicial_nuance",
+                  "score": 5,
+                  "argument": "PROSECUTION on 'Judicial Nuance and Dialectics': I searched for bypassed structure and found no verified defect; the evidence stands.",
+                  "cited_evidence": [
+                    "src/nodes/judges.py"
+                  ]
+                },
+                {
+                  "judge": "TechLead",
+                  "criterion_id": "judicial_nuance",
+                  "score": 5,
+                  "argument": "TECH LEAD on 'Judicial Nuance and Dialectics': artifacts are sound and maintainable as built.",
+                  "cited_evidence": [
+                    "src/nodes/judges.py"
+                  ]
+                }
+              ],
+              "rules_applied": [],
+              "overruled_judges": [],
+              "dissent_summary": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+              "remediation": "No remediation required."
+            },
+            {
+              "dimension_id": "chief_justice_synthesis",
+              "dimension_name": "Chief Justice Synthesis Engine",
+              "final_score": 5,
+              "judge_opinions": [
+                {
+                  "judge": "Defense",
+                  "criterion_id": "chief_justice_synthesis",
+                  "score": 5,
+                  "argument": "DEFENSE on 'Chief Justice Synthesis Engine': the record shows real engineering: 31 deterministic if-branches in src/nodes/justice.py; Rule of Security (cap at 3) implemented; Rule of Evidence / Fact Supremacy implemented.",
+                  "cited_evidence": [
+                    "src/nodes/justice.py::chief_justice_node"
+                  ]
+                },
+                {
+                  "judge": "Prosecutor",
+                  "criterion_id": "chief_justice_synthesis",
+                  "score": 5,
+                  "argument": "PROSECUTION on 'Chief Justice Synthesis Engine': I searched for bypassed structure and found no verified defect; the evidence stands.",
+                  "cited_evidence": [
+                    "src/nodes/justice.py::chief_justice_node"
+                  ]
+                },
+                {
+                  "judge": "TechLead",
+                  "criterion_id": "chief_justice_synthesis",
+                  "score": 5,
+                  "argument": "TECH LEAD on 'Chief Justice Synthesis Engine': artifacts are sound and maintainable as built.",
+                  "cited_evidence": [
+                    "src/nodes/justice.py::chief_justice_node"
+                  ]
+                }
+              ],
+              "rules_applied": [],
+              "overruled_judges": [],
+              "dissent_summary": "Unanimous bench (5/5): no dialectical conflict to resolve.",
+              "remediation": "No remediation required."
+            },
+            {
+              "dimension_id": "theoretical_depth",
+              "dimension_name": "Theoretical Depth (Documentation)",
+              "final_score": 2,
+              "judge_opinions": [
+                {
+                  "judge": "Defense",
+                  "criterion_id": "theoretical_depth",
+                  "score": 3,
+                  "argument": "DEFENSE on 'Theoretical Depth (Documentation)': the record shows real engineering: 2/4 concepts explained in architectural context (Dialectical Synthesis, Fan-In / Fan-Out); report ingested as 12 chunks..",
+                  "cited_evidence": [
+                    "reports/interim_report.md"
+                  ]
+                },
+                {
+                  "judge": "Prosecutor",
+                  "criterion_id": "theoretical_depth",
+                  "score": 1,
+                  "argument": "PROSECUTION on 'Theoretical Depth (Documentation)': the detective verified these defects: 'Metacognition' is never discussed; 'State Synchronization' is never discussed.",
+                  "cited_evidence": [
+                    "reports/interim_report.md",
+                    "'Metacognition' is never discussed",
+                    "'State Synchronization' is never discussed"
+                  ]
+                },
+                {
+                  "judge": "TechLead",
+                  "criterion_id": "theoretical_depth",
+                  "score": 3,
+                  "argument": "TECH LEAD on 'Theoretical Depth (Documentation)': technical debt: 'Metacognition' is never discussed; 'State Synchronization' is never discussed. Remediation: In the PDF report: explain how Dialectical Synthesis, Fan-In/Fan-Out, Metacognition and State Synchronization are executed, tying each to concrete nodes, edges and reducers rather than mentioning them only in the summary.",
+                  "cited_evidence": [
+                    "reports/interim_report.md"
+                  ]
+                }
+              ],
+              "rules_applied": [],
+              "overruled_judges": [],
+              "dissent_summary": "The Prosecutor (1/5) charged: \"PROSECUTION on 'Theoretical Depth (Documentation)': the detective verified these defects: 'Metacognition' is never discussed; 'State Synchronization' is never discussed.\" The Defense (3/5) countered: \"DEFENSE on 'Theoretical Depth (Documentation)': the record shows real engineering: 2/4 concepts explained in architectural context (Dialectical Synthesis, Fan-In / Fan-Out); report ingested as 12 chunks..\" The Tech Lead (3/5) assessed: \"TECH LEAD on 'Theoretical Depth (Documentation)': technical debt: 'Metacognition' is never discussed; 'State Synchronization' is never discussed.\" They disagreed by 2 point(s) because the Prosecutor weighed the verified gaps while the Defense weighed the implemented strengths. No side was overruled; the weighted bench (Tech Lead 40%, Prosecutor 30%, Defense 30%) decided.",
+              "remediation": "`reports/interim_report.md`: resolve \"'Metacognition' is never discussed\" | `reports/interim_report.md`: resolve \"'State Synchronization' is never discussed\" | In the PDF report: explain how Dialectical Synthesis, Fan-In/Fan-Out, Metacognition and State Synchronization are executed, tying each to concrete nodes, edges and reducers rather than mentioning them only in the summary."
+            },
+            {
+              "dimension_id": "report_accuracy",
+              "dimension_name": "Report Accuracy (Cross-Reference)",
+              "final_score": 2,
+              "judge_opinions": [
+                {
+                  "judge": "Defense",
+                  "criterion_id": "report_accuracy",
+                  "score": 3,
+                  "argument": "DEFENSE on 'Report Accuracy (Cross-Reference)': the record shows real engineering: Cross-referenced 12 cited paths against 31 repository files: 11 verified, 1 hallucinated; 6/6 feature claims match code evidence..",
+                  "cited_evidence": [
+                    "reports/interim_report.md"
+                  ]
+                },
+                {
+                  "judge": "Prosecutor",
+                  "criterion_id": "report_accuracy",
+                  "score": 1,
+                  "argument": "PROSECUTION [Auditor Hallucination] on 'Report Accuracy (Cross-Reference)': the detective verified these defects: HALLUCINATED PATH: reports/interim_report.pdf.",
+                  "cited_evidence": [
+                    "reports/interim_report.md",
+                    "HALLUCINATED PATH: reports/interim_report.pdf"
+                  ]
+                },
+                {
+                  "judge": "TechLead",
+                  "criterion_id": "report_accuracy",
+                  "score": 3,
+                  "argument": "TECH LEAD on 'Report Accuracy (Cross-Reference)': technical debt: HALLUCINATED PATH: reports/interim_report.pdf. Remediation: In the PDF report: remove or correct every cited path that does not exist in the repository, and only claim features the code actually implements.",
+                  "cited_evidence": [
+                    "reports/interim_report.md"
+                  ]
+                }
+              ],
+              "rules_applied": [],
+              "overruled_judges": [],
+              "dissent_summary": "The Prosecutor (1/5) charged: \"PROSECUTION [Auditor Hallucination] on 'Report Accuracy (Cross-Reference)': the detective verified these defects: HALLUCINATED PATH: reports/interim_report.pdf.\" The Defense (3/5) countered: \"DEFENSE on 'Report Accuracy (Cross-Reference)': the record shows real engineering: Cross-referenced 12 cited paths against 31 repository files: 11 verified, 1 hallucinated; 6/6 feature claims match code evidence..\" The Tech Lead (3/5) assessed: \"TECH LEAD on 'Report Accuracy (Cross-Reference)': technical debt: HALLUCINATED PATH: reports/interim_report.pdf.\" They disagreed by 2 point(s) because the Prosecutor weighed the verified gaps while the Defense weighed the implemented strengths. No side was overruled; the weighted bench (Tech Lead 40%, Prosecutor 30%, Defense 30%) decided.",
+              "remediation": "`reports/interim_report.md`: resolve \"HALLUCINATED PATH: reports/interim_report.pdf\" | In the PDF report: remove or correct every cited path that does not exist in the repository, and only claim features the code actually implements."
+            },
+            {
+              "dimension_id": "swarm_visual",
+              "dimension_name": "Architectural Diagram Analysis",
+              "final_score": 5,
+              "judge_opinions": [
+                {
+                  "judge": "Defense",
+                  "criterion_id": "swarm_visual",
+                  "score": 5,
+                  "argument": "DEFENSE on 'Architectural Diagram Analysis': the record shows real engineering: 0 embedded image(s) extracted; Mermaid flowchart with 14 edges: detective fan-out=True, judge fan-out=True.",
+                  "cited_evidence": [
+                    "reports/interim_report.md"
+                  ]
+                },
+                {
+                  "judge": "Prosecutor",
+                  "criterion_id": "swarm_visual",
+                  "score": 4,
+                  "argument": "PROSECUTION on 'Architectural Diagram Analysis': I searched for bypassed structure and found no verified defect; the evidence stands.",
+                  "cited_evidence": [
+                    "reports/interim_report.md"
+                  ]
+                },
+                {
+                  "judge": "TechLead",
+                  "criterion_id": "swarm_visual",
+                  "score": 5,
+                  "argument": "TECH LEAD on 'Architectural Diagram Analysis': artifacts are sound and maintainable as built.",
+                  "cited_evidence": [
+                    "reports/interim_report.md"
+                  ]
+                }
+              ],
+              "rules_applied": [],
+              "overruled_judges": [],
+              "dissent_summary": "The Prosecutor (4/5) charged: \"PROSECUTION on 'Architectural Diagram Analysis': I searched for bypassed structure and found no verified defect; the evidence stands.\" The Defense (5/5) countered: \"DEFENSE on 'Architectural Diagram Analysis': the record shows real engineering: 0 embedded image(s) extracted; Mermaid flowchart with 14 edges: detective fan-out=True, judge fan-out=True.\" The Tech Lead (5/5) assessed: \"TECH LEAD on 'Architectural Diagram Analysis': artifacts are sound and maintainable as built.\" They disagreed by 1 point(s) because the Prosecutor weighed the verified gaps while the Defense weighed the implemented strengths. No side was overruled; the weighted bench (Tech Lead 40%, Prosecutor 30%, Defense 30%) decided.",
+              "remediation": "No remediation required."
+            }
+          ],
+          "remediation_plan": "1. **Theoretical Depth (Documentation)** (2/5): \n   - `reports/interim_report.md`: resolve \"'Metacognition' is never discussed\"\n   - `reports/interim_report.md`: resolve \"'State Synchronization' is never discussed\"\n   - In the PDF report: explain how Dialectical Synthesis, Fan-In/Fan-Out, Metacognition and State Synchronization are executed, tying each to concrete nodes, edges and reducers rather than mentioning them only in the summary.\n2. **Report Accuracy (Cross-Reference)** (2/5): \n   - `reports/interim_report.md`: resolve \"HALLUCINATED PATH: reports/interim_report.pdf\"\n   - In the PDF report: remove or correct every cited path that does not exist in the repository, and only claim features the code actually implements."
+        },
+        "markdown_output": "# Automaton Auditor Verdict & Governance Report\n\n**Repository**: `https://github.com/kidus888/automaton-auditor.git (local working tree)`  \n**Report analysed**: `reports/interim_report.md`  \n**Overall Score**: `4.4 / 5.0` (Competent Orchestrator)  \n**Generated**: 2026-11-19 13:30 UTC\n\n## Executive Summary\n\nOverall verdict: 4.4/5.0 (Competent Orchestrator) across 10 rubric criteria. For every criterion the Prosecutor, Defense and Tech Lead judged the same detective evidence in parallel; the Chief Justice then resolved their disagreement with deterministic rules rather than an average. 0 criterion/criteria showed a score spread above 2 and were re-evaluated against the evidence; the Defense was overruled 0 time(s) and the Prosecutor 0 time(s). Strongest: Git Forensic Analysis, State Management Rigor, Graph Orchestration Architecture. Highest-priority remediation: Theoretical Depth (Documentation) (2/5), Report Accuracy (Cross-Reference) (2/5).\n\n| Criterion | Prosecutor | Defense | Tech Lead | Final | Rules fired |\n|---|:-:|:-:|:-:|:-:|---|\n| Git Forensic Analysis | 5 | 5 | 5 | **5** | - |\n| State Management Rigor | 5 | 5 | 5 | **5** | - |\n| Graph Orchestration Architecture | 5 | 5 | 5 | **5** | Rule Of Functionality |\n| Safe Tool Engineering | 5 | 5 | 5 | **5** | - |\n| Structured Output Enforcement | 5 | 5 | 5 | **5** | - |\n| Judicial Nuance and Dialectics | 5 | 5 | 5 | **5** | - |\n| Chief Justice Synthesis Engine | 5 | 5 | 5 | **5** | - |\n| Theoretical Depth (Documentation) | 1 | 3 | 3 | **2** | - |\n| Report Accuracy (Cross-Reference) | 1 | 3 | 3 | **2** | - |\n| Architectural Diagram Analysis | 4 | 5 | 5 | **5** | - |\n\n---\n\n## Criterion Breakdown\n\n### Git Forensic Analysis (`git_forensic_analysis`) \u2014 5/5\n\n**Evidence** (`.git (git log --reverse)`, found=True, confidence=1.0): Found 14 commits over 0.8 hours. Progression Setup -> Tool Engineering -> Graph Orchestration is visible in commit order; 3 fix/refactor/test commit(s) show iteration after initial implementation\n\n**Judicial Opinions**:\n- **Defense** (5/5): DEFENSE on 'Git Forensic Analysis': the record shows real engineering: Found 14 commits over 0.8 hours. Progression Setup -> Tool Engineering -> Graph Orchestration is visible in commit order; 3 fix/refactor/test commit(s) show iteration after initial implementation. *(Cited: .git (git log --reverse))*\n- **Prosecutor** (5/5): PROSECUTION on 'Git Forensic Analysis': I searched for bypassed structure and found no verified defect; the evidence stands. *(Cited: .git (git log --reverse))*\n- **TechLead** (5/5): TECH LEAD on 'Git Forensic Analysis': artifacts are sound and maintainable as built. *(Cited: .git (git log --reverse))*\n\n**Dissent**: Unanimous bench (5/5): no dialectical conflict to resolve.\n\n**Remediation**: No remediation required.\n\n---\n\n### State Management Rigor (`state_management_rigor`) \u2014 5/5\n\n**Evidence** (`src/state.py`, found=True, confidence=1.0): AgentState inherits TypedDict; Evidence is a Pydantic BaseModel; 'evidences' uses reducer operator.ior; JudicialOpinion is a Pydantic BaseModel; 'opinions' uses reducer operator.add\n\n**Judicial Opinions**:\n- **Defense** (5/5): DEFENSE on 'State Management Rigor': the record shows real engineering: AgentState inherits TypedDict; Evidence is a Pydantic BaseModel; 'evidences' uses reducer operator.ior. *(Cited: src/state.py)*\n- **Prosecutor** (5/5): PROSECUTION on 'State Management Rigor': I searched for bypassed structure and found no verified defect; the evidence stands. *(Cited: src/state.py)*\n- **TechLead** (5/5): TECH LEAD on 'State Management Rigor': artifacts are sound and maintainable as built. *(Cited: src/state.py)*\n\n**Dissent**: Unanimous bench (5/5): no dialectical conflict to resolve.\n\n**Remediation**: No remediation required.\n\n---\n\n### Graph Orchestration Architecture (`graph_orchestration`) \u2014 5/5\n\n**Evidence** (`src/graph.py`, found=True, confidence=1.0): StateGraph instantiated in src/graph.py with 10 nodes and 12 static edges; Detectives fan out in parallel from 'ContextBuilder' -> ['DocAnalyst', 'RepoInvestigator', 'VisionInspector']; 'EvidenceAggregator' synchronizes (fan-in) evidence from ['DocAnalyst', 'RepoInvestigator', 'VisionInspector']; Judges fan out in parallel from 'EvidenceAggregator' -> ['Defense', 'Prosecutor', 'TechLead']; Judges fan in to 'ChiefJustice'; Conditional edges route failures to ['EvidenceMissing']\n\n**Judicial Opinions**:\n- **Defense** (5/5): DEFENSE on 'Graph Orchestration Architecture': the record shows real engineering: StateGraph instantiated in src/graph.py with 10 nodes and 12 static edges; Detectives fan out in parallel from 'ContextBuilder' -> ['DocAnalyst', 'RepoInvestigator', 'VisionInspector']; 'EvidenceAggregator' synchronizes (fan-in) evidence from ['DocAnalyst', 'RepoInvestigator', 'VisionInspector']. *(Cited: src/graph.py)*\n- **Prosecutor** (5/5): PROSECUTION on 'Graph Orchestration Architecture': I searched for bypassed structure and found no verified defect; the evidence stands. *(Cited: src/graph.py)*\n- **TechLead** (5/5): TECH LEAD on 'Graph Orchestration Architecture': artifacts are sound and maintainable as built. *(Cited: src/graph.py)*\n\n**Dissent**: Unanimous bench (5/5): no dialectical conflict to resolve.\n\n**Rules applied**: `RULE OF FUNCTIONALITY: Tech Lead confirmed a modular, workable architecture; carries highest weight`\n\n**Remediation**: No remediation required.\n\n---\n\n### Safe Tool Engineering (`safe_tool_engineering`) \u2014 5/5\n\n**Evidence** (`src/tools/repo_tools.py::clone_repo_sandboxed`, found=True, confidence=1.0): Clones are sandboxed with tempfile.TemporaryDirectory()/mkdtemp(); Clone function located at src/tools/repo_tools.py::clone_repo_sandboxed; clone checks returncode / handles exceptions; stdout/stderr captured; No os.system / shell=True calls (AST-verified)\n\n**Judicial Opinions**:\n- **Defense** (5/5): DEFENSE on 'Safe Tool Engineering': the record shows real engineering: Clones are sandboxed with tempfile.TemporaryDirectory()/mkdtemp(); Clone function located at src/tools/repo_tools.py::clone_repo_sandboxed; clone checks returncode / handles exceptions. *(Cited: src/tools/repo_tools.py::clone_repo_sandboxed)*\n- **Prosecutor** (5/5): PROSECUTION on 'Safe Tool Engineering': I searched for bypassed structure and found no verified defect; the evidence stands. *(Cited: src/tools/repo_tools.py::clone_repo_sandboxed)*\n- **TechLead** (5/5): TECH LEAD on 'Safe Tool Engineering': artifacts are sound and maintainable as built. *(Cited: src/tools/repo_tools.py::clone_repo_sandboxed)*\n\n**Dissent**: Unanimous bench (5/5): no dialectical conflict to resolve.\n\n**Remediation**: No remediation required.\n\n---\n\n### Structured Output Enforcement (`structured_output_enforcement`) \u2014 5/5\n\n**Evidence** (`src/nodes/judges.py::_judge_llm`, found=True, confidence=1.0): Judge LLM bound to Pydantic schema via structured output (JudicialOpinion); Retry loop re-queries the judge on malformed / free-text output\n\n**Judicial Opinions**:\n- **Defense** (5/5): DEFENSE on 'Structured Output Enforcement': the record shows real engineering: Judge LLM bound to Pydantic schema via structured output (JudicialOpinion); Retry loop re-queries the judge on malformed / free-text output. *(Cited: src/nodes/judges.py::_judge_llm)*\n- **Prosecutor** (5/5): PROSECUTION on 'Structured Output Enforcement': I searched for bypassed structure and found no verified defect; the evidence stands. *(Cited: src/nodes/judges.py::_judge_llm)*\n- **TechLead** (5/5): TECH LEAD on 'Structured Output Enforcement': artifacts are sound and maintainable as built. *(Cited: src/nodes/judges.py::_judge_llm)*\n\n**Dissent**: Unanimous bench (5/5): no dialectical conflict to resolve.\n\n**Remediation**: No remediation required.\n\n---\n\n### Judicial Nuance and Dialectics (`judicial_nuance`) \u2014 5/5\n\n**Evidence** (`src/nodes/judges.py`, found=True, confidence=1.0): Persona prompts are distinct (pairwise word overlap: Prosecutor/Defense=12%, Prosecutor/TechLead=15%, Defense/TechLead=17%); Prosecutor prompt carries its philosophy (trust no one, harsh, scrutin); Defense prompt carries its philosophy (effort, intent, spirit); TechLead prompt carries its philosophy (maintainab, pragmatic, technical debt); Per-criterion judicial_logic from the rubric is injected into persona prompts\n\n**Judicial Opinions**:\n- **Defense** (5/5): DEFENSE on 'Judicial Nuance and Dialectics': the record shows real engineering: Persona prompts are distinct (pairwise word overlap: Prosecutor/Defense=12%, Prosecutor/TechLead=15%, Defense/TechLead=17%); Prosecutor prompt carries its philosophy (trust no one, harsh, scrutin); Defense prompt carries its philosophy (effort, intent, spirit). *(Cited: src/nodes/judges.py)*\n- **Prosecutor** (5/5): PROSECUTION on 'Judicial Nuance and Dialectics': I searched for bypassed structure and found no verified defect; the evidence stands. *(Cited: src/nodes/judges.py)*\n- **TechLead** (5/5): TECH LEAD on 'Judicial Nuance and Dialectics': artifacts are sound and maintainable as built. *(Cited: src/nodes/judges.py)*\n\n**Dissent**: Unanimous bench (5/5): no dialectical conflict to resolve.\n\n**Remediation**: No remediation required.\n\n---\n\n### Chief Justice Synthesis Engine (`chief_justice_synthesis`) \u2014 5/5\n\n**Evidence** (`src/nodes/justice.py::chief_justice_node`, found=True, confidence=1.0): 31 deterministic if-branches in src/nodes/justice.py; Rule of Security (cap at 3) implemented; Rule of Evidence / Fact Supremacy implemented; Rule of Functionality (Tech Lead weight) implemented; Variance > 2 re-evaluation implemented; Dissent summary implemented; Emits Markdown with Executive Summary and Remediation Plan sections\n\n**Judicial Opinions**:\n- **Defense** (5/5): DEFENSE on 'Chief Justice Synthesis Engine': the record shows real engineering: 31 deterministic if-branches in src/nodes/justice.py; Rule of Security (cap at 3) implemented; Rule of Evidence / Fact Supremacy implemented. *(Cited: src/nodes/justice.py::chief_justice_node)*\n- **Prosecutor** (5/5): PROSECUTION on 'Chief Justice Synthesis Engine': I searched for bypassed structure and found no verified defect; the evidence stands. *(Cited: src/nodes/justice.py::chief_justice_node)*\n- **TechLead** (5/5): TECH LEAD on 'Chief Justice Synthesis Engine': artifacts are sound and maintainable as built. *(Cited: src/nodes/justice.py::chief_justice_node)*\n\n**Dissent**: Unanimous bench (5/5): no dialectical conflict to resolve.\n\n**Remediation**: No remediation required.\n\n---\n\n### Theoretical Depth (Documentation) (`theoretical_depth`) \u2014 2/5\n\n**Evidence** (`reports/interim_report.md`, found=False, confidence=0.85): 2/4 concepts explained in architectural context (Dialectical Synthesis, Fan-In / Fan-Out); report ingested as 12 chunks.\n\n**Judicial Opinions**:\n- **Defense** (3/5): DEFENSE on 'Theoretical Depth (Documentation)': the record shows real engineering: 2/4 concepts explained in architectural context (Dialectical Synthesis, Fan-In / Fan-Out); report ingested as 12 chunks.. *(Cited: reports/interim_report.md)*\n- **Prosecutor** (1/5): PROSECUTION on 'Theoretical Depth (Documentation)': the detective verified these defects: 'Metacognition' is never discussed; 'State Synchronization' is never discussed. *(Cited: reports/interim_report.md, 'Metacognition' is never discussed, 'State Synchronization' is never discussed)*\n- **TechLead** (3/5): TECH LEAD on 'Theoretical Depth (Documentation)': technical debt: 'Metacognition' is never discussed; 'State Synchronization' is never discussed. Remediation: In the PDF report: explain how Dialectical Synthesis, Fan-In/Fan-Out, Metacognition and State Synchronization are executed, tying each to concrete nodes, edges and reducers rather than mentioning them only in the summary. *(Cited: reports/interim_report.md)*\n\n**Dissent**: The Prosecutor (1/5) charged: \"PROSECUTION on 'Theoretical Depth (Documentation)': the detective verified these defects: 'Metacognition' is never discussed; 'State Synchronization' is never discussed.\" The Defense (3/5) countered: \"DEFENSE on 'Theoretical Depth (Documentation)': the record shows real engineering: 2/4 concepts explained in architectural context (Dialectical Synthesis, Fan-In / Fan-Out); report ingested as 12 chunks..\" The Tech Lead (3/5) assessed: \"TECH LEAD on 'Theoretical Depth (Documentation)': technical debt: 'Metacognition' is never discussed; 'State Synchronization' is never discussed.\" They disagreed by 2 point(s) because the Prosecutor weighed the verified gaps while the Defense weighed the implemented strengths. No side was overruled; the weighted bench (Tech Lead 40%, Prosecutor 30%, Defense 30%) decided.\n\n**Remediation**: `reports/interim_report.md`: resolve \"'Metacognition' is never discussed\" `reports/interim_report.md`: resolve \"'State Synchronization' is never discussed\" In the PDF report: explain how Dialectical Synthesis, Fan-In/Fan-Out, Metacognition and State Synchronization are executed, tying each to concrete nodes, edges and reducers rather than mentioning them only in the summary.\n\n---\n\n### Report Accuracy (Cross-Reference) (`report_accuracy`) \u2014 2/5\n\n**Evidence** (`reports/interim_report.md`, found=False, confidence=1.0): Cross-referenced 12 cited paths against 31 repository files: 11 verified, 1 hallucinated; 6/6 feature claims match code evidence.\n\n**Judicial Opinions**:\n- **Defense** (3/5): DEFENSE on 'Report Accuracy (Cross-Reference)': the record shows real engineering: Cross-referenced 12 cited paths against 31 repository files: 11 verified, 1 hallucinated; 6/6 feature claims match code evidence.. *(Cited: reports/interim_report.md)*\n- **Prosecutor** (1/5): PROSECUTION [Auditor Hallucination] on 'Report Accuracy (Cross-Reference)': the detective verified these defects: HALLUCINATED PATH: reports/interim_report.pdf. *(Cited: reports/interim_report.md, HALLUCINATED PATH: reports/interim_report.pdf)*\n- **TechLead** (3/5): TECH LEAD on 'Report Accuracy (Cross-Reference)': technical debt: HALLUCINATED PATH: reports/interim_report.pdf. Remediation: In the PDF report: remove or correct every cited path that does not exist in the repository, and only claim features the code actually implements. *(Cited: reports/interim_report.md)*\n\n**Dissent**: The Prosecutor (1/5) charged: \"PROSECUTION [Auditor Hallucination] on 'Report Accuracy (Cross-Reference)': the detective verified these defects: HALLUCINATED PATH: reports/interim_report.pdf.\" The Defense (3/5) countered: \"DEFENSE on 'Report Accuracy (Cross-Reference)': the record shows real engineering: Cross-referenced 12 cited paths against 31 repository files: 11 verified, 1 hallucinated; 6/6 feature claims match code evidence..\" The Tech Lead (3/5) assessed: \"TECH LEAD on 'Report Accuracy (Cross-Reference)': technical debt: HALLUCINATED PATH: reports/interim_report.pdf.\" They disagreed by 2 point(s) because the Prosecutor weighed the verified gaps while the Defense weighed the implemented strengths. No side was overruled; the weighted bench (Tech Lead 40%, Prosecutor 30%, Defense 30%) decided.\n\n**Remediation**: `reports/interim_report.md`: resolve \"HALLUCINATED PATH: reports/interim_report.pdf\" In the PDF report: remove or correct every cited path that does not exist in the repository, and only claim features the code actually implements.\n\n---\n\n### Architectural Diagram Analysis (`swarm_visual`) \u2014 5/5\n\n**Evidence** (`reports/interim_report.md`, found=True, confidence=0.8): 0 embedded image(s) extracted; Mermaid flowchart with 14 edges: detective fan-out=True, judge fan-out=True\n\n**Judicial Opinions**:\n- **Defense** (5/5): DEFENSE on 'Architectural Diagram Analysis': the record shows real engineering: 0 embedded image(s) extracted; Mermaid flowchart with 14 edges: detective fan-out=True, judge fan-out=True. *(Cited: reports/interim_report.md)*\n- **Prosecutor** (4/5): PROSECUTION on 'Architectural Diagram Analysis': I searched for bypassed structure and found no verified defect; the evidence stands. *(Cited: reports/interim_report.md)*\n- **TechLead** (5/5): TECH LEAD on 'Architectural Diagram Analysis': artifacts are sound and maintainable as built. *(Cited: reports/interim_report.md)*\n\n**Dissent**: The Prosecutor (4/5) charged: \"PROSECUTION on 'Architectural Diagram Analysis': I searched for bypassed structure and found no verified defect; the evidence stands.\" The Defense (5/5) countered: \"DEFENSE on 'Architectural Diagram Analysis': the record shows real engineering: 0 embedded image(s) extracted; Mermaid flowchart with 14 edges: detective fan-out=True, judge fan-out=True.\" The Tech Lead (5/5) assessed: \"TECH LEAD on 'Architectural Diagram Analysis': artifacts are sound and maintainable as built.\" They disagreed by 1 point(s) because the Prosecutor weighed the verified gaps while the Defense weighed the implemented strengths. No side was overruled; the weighted bench (Tech Lead 40%, Prosecutor 30%, Defense 30%) decided.\n\n**Remediation**: No remediation required.\n\n---\n\n## Remediation Plan\n\nOrdered by priority (lowest score first):\n\n1. **Theoretical Depth (Documentation)** (2/5): \n   - `reports/interim_report.md`: resolve \"'Metacognition' is never discussed\"\n   - `reports/interim_report.md`: resolve \"'State Synchronization' is never discussed\"\n   - In the PDF report: explain how Dialectical Synthesis, Fan-In/Fan-Out, Metacognition and State Synchronization are executed, tying each to concrete nodes, edges and reducers rather than mentioning them only in the summary.\n2. **Report Accuracy (Cross-Reference)** (2/5): \n   - `reports/interim_report.md`: resolve \"HALLUCINATED PATH: reports/interim_report.pdf\"\n   - In the PDF report: remove or correct every cited path that does not exist in the repository, and only claim features the code actually implements.\n\n## Synthesis Rules (Constitution)\n\n- **security_override**: Confirmed security flaws (e.g., shell injection in git tools, raw os.system with unsanitized inputs) cap the total score at 3, overriding any effort points from the Defense.\n- **fact_supremacy**: Forensic evidence (facts from Detectives) always overrules Judicial opinion (interpretation from Judges). If the Defense claims 'Deep Metacognition' but the RepoInvestigator found no supporting code, the Defense is overruled for hallucination.\n- **functionality_weight**: If the Tech Lead confirms the architecture is modular and workable, this carries the highest weight for the 'Graph Orchestration Architecture' criterion.\n- **dissent_requirement**: The Chief Justice must summarize why the Prosecutor and Defense disagreed in the final report. Every criterion with a score variance > 2 must include an explicit dissent explanation.\n- **variance_re_evaluation**: If score variance across the three judges exceeds 2 for any criterion (e.g., Prosecutor says 1, Defense says 5), trigger a re-evaluation of the specific evidence cited by each judge before rendering the final score.\n- **statute_caps**: Orchestration Fraud (purely linear graph) caps graph_orchestration at 1. Hallucination Liability (judges without structured output) and Persona Collusion cap judicial_nuance at 2.\n"
+      }
+    }
+  ]
+}
